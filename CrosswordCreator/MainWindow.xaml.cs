@@ -24,5 +24,7 @@ namespace CrosswordCreator
     {
       InitializeComponent();
     }
+
+    private void Button_Click(object sender, RoutedEventArgs e) => test.Change();
   }
 }
