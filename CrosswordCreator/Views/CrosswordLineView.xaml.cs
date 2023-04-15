@@ -22,65 +22,63 @@ namespace CrosswordCreator.Views
   /// </summary>
   public partial class CrosswordLineView : UserControl
   {
-    private readonly CrosswordLineViewModel _viewModel;
-    private char _chart = 'A';
-    private int amount = 3;
+    private CrosswordLineViewModel _viewModel;
 
     public CrosswordLineView()
     {
       InitializeComponent();
 
-      //_viewModel = DataContext as CrosswordLineViewModel;
-      //_viewModel.PropertyChanged += HandlePropertyChangedFromViewModel;
+      this.DataContextChanged += CrosswordLineView_DataContextChanged;
+    }
 
-      _container.Children.Clear();
-
-      for (int i = 0; i < amount; i++)
+    private void CrosswordLineView_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+    {
+      _viewModel = DataContext as CrosswordLineViewModel;
+      if (_viewModel is not null)
       {
-        var labelToAdd = new Label()
-        {
-          Content = _chart
-        };
+        _viewModel.PropertyChanged += HandlePropertyChangedFromViewModel;
 
-        _container.Children.Add(labelToAdd);
+        HandlePropertyChangedFromViewModel(sender, new PropertyChangedEventArgs(nameof(_viewModel.ControlWidth)));
       }
     }
 
-    //public void Change()
-    //{
-    //  _chart++;
-    //  amount++;
-    //  _container.Children.Clear();
-
-    //  for (int i = 0; i < amount; i++)
-    //  {
-    //    var labelToAdd = new Label()
-    //    {
-    //      Content = _chart,
-    //      Visibility = i % 2 == 0 ? Visibility.Visible : Visibility.Hidden
-    //    };
-
-    //    _container.Children.Add(labelToAdd);
-    //  }
-    //}
-
     private void HandlePropertyChangedFromViewModel(object sender_, PropertyChangedEventArgs e_)
     {
-      if (e_.PropertyName == nameof(_viewModel.ControlWidth))
+      if (e_.PropertyName == nameof(_viewModel.ControlWidth)
+        || e_.PropertyName == nameof(_viewModel.LineItem.LineWord))
       {
-        // width: 3 
-        // valami
-        var word = _viewModel.LineItem.LineWord;
+        var chars = new char[_viewModel.ControlWidth * 2 + 1];
+
+        int positionToMark = 0;
+
+        for (int i = 0; i < _viewModel.LineItem.LineWord.Length; i++)
+        {
+          chars[_viewModel.ControlWidth - _viewModel.LineItem.SolutionCharacterNumberInLineWord + i] =
+            _viewModel.LineItem.LineWord[i];
+
+          if (i + 1 == _viewModel.LineItem.SolutionCharacterNumberInLineWord)
+          {
+            positionToMark = _viewModel.ControlWidth - _viewModel.LineItem.SolutionCharacterNumberInLineWord + i;
+          }
+        }
 
         _container.Children.Clear();
 
-        for (int i = 0; i < _viewModel.ControlWidth; i++)
+        for (int i = 0; i < chars.Length; i++)
         {
           var labelToAdd = new Label()
           {
-            Content = "A"
+            Content = chars[i],
+            Visibility = chars[i] != 0 ? Visibility.Visible : Visibility.Hidden,
           };
 
+          if (i == positionToMark)
+          {
+            labelToAdd.BorderThickness = new Thickness(2, 
+              _viewModel.LineItem.PlaceInCrossword == 1 ? 2 : 1,
+              2,
+              _viewModel.LineItem.IsLastInCrossword ? 2 : 1);
+          }
           _container.Children.Add(labelToAdd);
         }
       }

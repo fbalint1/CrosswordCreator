@@ -48,4 +48,32 @@
         </Setter>
     </Style>
 
+    <Style x:Key="ListBoxItemStyle" TargetType="{x:Type ListBoxItem}">
+        <!--<Setter Property="Height" Value="41"/>-->
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                    <Border x:Name="ListBoxItemBorder" CornerRadius="7">
+                        <ContentPresenter/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="ListBoxItemBorder" Property="BorderBrush" Value="White"/>
+                            <Setter TargetName="ListBoxItemBorder" Property="BorderThickness" Value="0"/>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="False">
+                            <Setter TargetName="ListBoxItemBorder" Property="BorderBrush" Value="White"/>
+                            <Setter TargetName="ListBoxItemBorder" Property="BorderThickness" Value="0"/>
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="ListBoxItemBorder" Property="BorderBrush" Value="White"/>
+                            <Setter TargetName="ListBoxItemBorder" Property="BorderThickness" Value="0"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+
 </ResourceDictionary>

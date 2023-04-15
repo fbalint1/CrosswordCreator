@@ -20,6 +20,5 @@ namespace CrosswordCreator.ViewModels
     public CrosswordLine LineItem { get; }
 
     public int ControlWidth { get; set; }
-
   }
 }
