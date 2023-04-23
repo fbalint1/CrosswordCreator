@@ -1,19 +1,7 @@
 ﻿using CrosswordCreator.ViewModels;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace CrosswordCreator.Views
 {
@@ -33,32 +21,33 @@ namespace CrosswordCreator.Views
 
     private void CrosswordLineView_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
     {
-      _viewModel = DataContext as CrosswordLineViewModel;
+      _viewModel = (CrosswordLineViewModel)DataContext;
       if (_viewModel is not null)
       {
         _viewModel.PropertyChanged += HandlePropertyChangedFromViewModel;
 
-        HandlePropertyChangedFromViewModel(sender, new PropertyChangedEventArgs(nameof(_viewModel.ControlWidth)));
+        HandlePropertyChangedFromViewModel(sender, new PropertyChangedEventArgs(nameof(_viewModel.ControlWidthLeft)));
       }
     }
 
     private void HandlePropertyChangedFromViewModel(object sender_, PropertyChangedEventArgs e_)
     {
-      if (e_.PropertyName == nameof(_viewModel.ControlWidth)
+      if (e_.PropertyName == nameof(_viewModel.ControlWidthLeft)
         || e_.PropertyName == nameof(_viewModel.LineItem.LineWord))
       {
-        var chars = new char[_viewModel.ControlWidth * 2 + 1];
+        var chars = new char[_viewModel.ControlWidthLeft + _viewModel.ControlWidthRight + 1];
 
         int positionToMark = 0;
 
         for (int i = 0; i < _viewModel.LineItem.LineWord.Length; i++)
         {
-          chars[_viewModel.ControlWidth - _viewModel.LineItem.SolutionCharacterNumberInLineWord + i] =
+          int index = _viewModel.ControlWidthLeft - _viewModel.LineItem.SolutionCharacterNumberInLineWord + 1 + i;
+          chars[index] =
             _viewModel.LineItem.LineWord[i];
 
           if (i + 1 == _viewModel.LineItem.SolutionCharacterNumberInLineWord)
           {
-            positionToMark = _viewModel.ControlWidth - _viewModel.LineItem.SolutionCharacterNumberInLineWord + i;
+            positionToMark = _viewModel.ControlWidthLeft - _viewModel.LineItem.SolutionCharacterNumberInLineWord + 1 + i;
           }
         }
 
@@ -74,10 +63,10 @@ namespace CrosswordCreator.Views
 
           if (i == positionToMark)
           {
-            labelToAdd.BorderThickness = new Thickness(2, 
-              _viewModel.LineItem.PlaceInCrossword == 1 ? 2 : 1,
-              2,
-              _viewModel.LineItem.IsLastInCrossword ? 2 : 1);
+            labelToAdd.BorderThickness = new Thickness(3,
+              _viewModel.LineItem.PlaceInCrossword == 1 ? 3 : 1,
+              3,
+              _viewModel.LineItem.IsLastInCrossword ? 3 : 1);
           }
           _container.Children.Add(labelToAdd);
         }
