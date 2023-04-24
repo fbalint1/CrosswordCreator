@@ -10,12 +10,40 @@
         WindowStyle="None"
         Background="Transparent"
         AllowsTransparency="True"
-        SizeToContent="WidthAndHeight">
+        WindowStartupLocation="CenterScreen"
+        Height="310" Width="500">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Styles/Styles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+
+            <Style x:Key="TextBoxStyle" TargetType="{x:Type TextBox}">
+                <Setter Property="FontWeight" Value="Bold"/>
+                <Setter Property="Background" Value="LightGray"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                <Setter Property="Margin" Value="0 5 5 5"/>
+                <Setter Property="BorderBrush" Value="Black"/>
+                <Setter Property="Height" Value="60"/>
+                <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                <Setter Property="FontSize" Value="30"/>
+            </Style>
+
+            <Style x:Key="LabelStyle" TargetType="{x:Type Label}">
+                <Setter Property="HorizontalAlignment" Value="Right"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="FontSize" Value="30"/>
+            </Style>
+
+            <Style x:Key="ButtonStyle" TargetType="{x:Type Button}">
+                <Setter Property="Margin" Value="4"/>
+                <Setter Property="BorderBrush" Value="Black"/>
+                <Setter Property="FontSize" Value="11"/>
+                <Setter Property="FontWeight" Value="Bold"/>
+                <Setter Property="Height" Value="60"/>
+                <Setter Property="FontSize" Value="30"/>
+            </Style>
         </ResourceDictionary>
     </Window.Resources>
 
@@ -23,50 +51,58 @@
         <vms:CrosswordLineEditorViewModel />
     </Window.DataContext>
 
-    <Border Background="White" CornerRadius="10">
-        <Grid>
+    <Border Background="White"
+            CornerRadius="10"
+            BorderBrush="Black"
+            BorderThickness="1">
+        <Grid Background="Transparent" MouseLeftButtonDown="Grid_MouseLeftButtonDown">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="8*"/>
+                <ColumnDefinition Width="14*"/>
+                <ColumnDefinition Width="8*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="30"/>
+                <RowDefinition Height="40"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition />
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="80"/>
             </Grid.RowDefinitions>
 
-            <StackPanel Grid.Row="0" Grid.Column="0"
+            <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
                         Orientation="Horizontal">
-                <Label Content="Sor szerkesztése" FontWeight="Bold"/>
+                <Label Content="Sor szerkesztése" 
+                       FontWeight="Bold"
+                       VerticalAlignment="Center"
+                       FontSize="15"/>
             </StackPanel>
 
-            <StackPanel Grid.Row="0" Grid.Column="1"
+            <StackPanel Grid.Row="0" Grid.Column="2"
                         Orientation="Horizontal"
                         HorizontalAlignment="Right">
                 <Button Style="{StaticResource CloseButton}"
-                        Click="Button_Click"/>
+                        Command="{Binding CancelCommand}"
+                        CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"/>
             </StackPanel>
 
-            <Label Grid.Row="1" 
-                   Content="Megoldás betűje a sorban:"/>
-
-            <Label Grid.Row="1" Grid.Column="1"
+            <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                   Content="Megoldás betűje a sorban:"
+                   Style="{StaticResource LabelStyle}"
+                   HorizontalAlignment="Left"/>
+            
+            <Label Grid.Row="1" Grid.Column="2"
                    Content="{Binding Character}"
+                   Style="{StaticResource LabelStyle}"
+                   HorizontalAlignment="Left"
                    FontWeight="Bold"/>
 
             <Label Grid.Row="2"
-                   Content="Szó:"/>
+                   Content="Szó:"
+                   Style="{StaticResource LabelStyle}"/>
 
-            <TextBox Grid.Row="2" Grid.Column="1"
-                     Text="{Binding LineWord}"
-                     FontWeight="Bold"
-                     Background="LightGray"
-                     VerticalContentAlignment="Center"
-                     HorizontalContentAlignment="Left"
-                     Margin="0 5 5 5"
-                     BorderBrush="Black"
-                     Height="25" HorizontalAlignment="Stretch">
+            <TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2"
+                     Text="{Binding LineWord, UpdateSourceTrigger=PropertyChanged}"
+                     Style="{StaticResource TextBoxStyle}">
                 <TextBox.Resources>
                     <Style TargetType="{x:Type Border}">
                         <Setter Property="CornerRadius" Value="5"/>
@@ -75,16 +111,60 @@
             </TextBox>
             
             <Label Grid.Row="3"
-                   Content="Segítség:"/>
+                   Content="Segítség:"
+                   Style="{StaticResource LabelStyle}"/>
 
-            <TextBox Grid.Row="3" Grid.Column="1"
-                     Text="{Binding LineWord}"
-                     FontWeight="Bold"
-                     VerticalContentAlignment="Center"
-                     HorizontalAlignment="Left"
-                     Margin="0 5 5 5"/>
+            <TextBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2"
+                     Text="{Binding Clue, UpdateSourceTrigger=PropertyChanged}"
+                     Style="{StaticResource TextBoxStyle}">
+                <TextBox.Resources>
+                    <Style TargetType="{x:Type Border}">
+                        <Setter Property="CornerRadius" Value="5"/>
+                    </Style>
+                </TextBox.Resources>
+            </TextBox>
 
-            
+            <Grid Grid.Row="4" Grid.ColumnSpan="3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" 
+                        Content="Újra"
+                        Style="{StaticResource ButtonStyle}"
+                        Command="{Binding ResetCommand}">
+                    <Button.Resources>
+                        <Style TargetType="{x:Type Border}">
+                            <Setter Property="CornerRadius" Value="10"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+                <Button Grid.Column="1"
+                        Content="Mentés"
+                        Style="{StaticResource ButtonStyle}"
+                        Command="{Binding SaveCommand}"
+                        CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"
+                        ToolTip="{Binding SaveButtonTooltip}"
+                        ToolTipService.ShowOnDisabled="True">
+                    <Button.Resources>
+                        <Style TargetType="{x:Type Border}">
+                            <Setter Property="CornerRadius" Value="10"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+                <Button Grid.Column="2"
+                        Content="Mégse"
+                        Style="{StaticResource ButtonStyle}"
+                        Command="{Binding CancelCommand}"
+                        CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}">
+                    <Button.Resources>
+                        <Style TargetType="{x:Type Border}">
+                            <Setter Property="CornerRadius" Value="10"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+            </Grid>
         </Grid>
     </Border>
 </Window>

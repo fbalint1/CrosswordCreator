@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CrosswordCreator.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,9 +25,12 @@ namespace CrosswordCreator.Views
       InitializeComponent();
     }
 
-    private void Button_Click(object sender, RoutedEventArgs e)
+    public CrosswordLineEditorView(CrosswordLineEditorViewModel crosswordLineEditorViewModel_)
+      : this()
     {
-
+      DataContext = crosswordLineEditorViewModel_;
     }
+
+    private void Grid_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) => DragMove();
   }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CrosswordCreator.Models
 {
-  internal class CrosswordLine
+  public class CrosswordLine
   {
     public string LineWord { get; set; }
     public int SolutionCharacterNumberInLineWord { get; set; }

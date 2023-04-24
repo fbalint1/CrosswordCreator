@@ -6,17 +6,20 @@
         xmlns:local="clr-namespace:CrosswordCreator"
         xmlns:views="clr-namespace:CrosswordCreator.Views"
         xmlns:vms="clr-namespace:CrosswordCreator.ViewModels"
+        xmlns:utils="clr-namespace:CrosswordCreator.Utilities"
         mc:Ignorable="d"
         Title="Keresztrejtvény szerkesztő" 
         WindowStyle="None"
         Background="Transparent"
         AllowsTransparency="True"
+        WindowStartupLocation="CenterScreen"
         Height="600" Width="1150">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Styles/Styles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+            <utils:BindingProxy x:Key="BindingProxy" Data="{Binding }"/>
         </ResourceDictionary>
     </Window.Resources>
 
@@ -60,6 +63,7 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="30"/>
                             </Grid.ColumnDefinitions>
                             <views:CrosswordLineView Grid.Column="0" DataContext="{Binding }"/>
                             <StackPanel Grid.Column="1" Orientation="Horizontal">
@@ -70,6 +74,13 @@
                                        VerticalContentAlignment="Center"
                                        FontSize="30"/>
                             </StackPanel>
+                            <Button Grid.Column="2"
+                                    BorderThickness="0"
+                                    Background="Transparent"
+                                    Command="{Binding Data.EditCommand, Source={StaticResource BindingProxy}}"
+                                    CommandParameter="{Binding }">
+                                <Image Source="/Images/EditButton.png"/>
+                            </Button>
                         </Grid>
                     </DataTemplate>
                 </ListView.ItemTemplate>
