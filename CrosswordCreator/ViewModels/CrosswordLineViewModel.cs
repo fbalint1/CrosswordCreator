@@ -22,9 +22,12 @@ namespace CrosswordCreator.ViewModels
     public int ControlWidthLeft { get; set; }
     public int ControlWidthRight { get; set; }
 
+    public string Clue => LineItem.Clue;
+
     public void NotifyUpdates()
     {
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LineItem.LineWord)));
+      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Clue)));
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ControlWidthLeft)));
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ControlWidthRight)));
     }

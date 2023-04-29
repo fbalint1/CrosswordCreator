@@ -30,8 +30,6 @@ namespace CrosswordCreator.ViewModels
 
           if (editorViewModel.ShouldUpateMainWindow)
           {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(crosswordLineViewModel.LineItem.Clue)));
-
             RecalculateGridMetrics();
           }
         }

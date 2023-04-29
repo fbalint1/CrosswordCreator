@@ -70,7 +70,7 @@
                                 <TextBlock Margin="10 0 0 0" Text="{Binding LineItem.PlaceInCrossword, StringFormat={}{0}.}"
                                        VerticalAlignment="Center"
                                        FontSize="30"/>
-                                <Label Content="{Binding LineItem.Clue}"
+                                <Label Content="{Binding Clue}"
                                        VerticalContentAlignment="Center"
                                        FontSize="30"/>
                             </StackPanel>
