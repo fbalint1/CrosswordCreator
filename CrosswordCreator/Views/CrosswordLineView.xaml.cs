@@ -10,44 +10,101 @@ namespace CrosswordCreator.Views
   /// </summary>
   public partial class CrosswordLineView : UserControl
   {
+    private int _currentLeft = 0;
+    private int _currentRight = 0;
+    private string _currentWord = "";
+
     private CrosswordLineViewModel _viewModel;
 
     public CrosswordLineView()
     {
       InitializeComponent();
-
-      this.DataContextChanged += CrosswordLineView_DataContextChanged;
     }
 
-    private void CrosswordLineView_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+    public int CellsLeftFromMiddle
     {
-      _viewModel = (CrosswordLineViewModel)DataContext;
-      if (_viewModel is not null)
-      {
-        _viewModel.PropertyChanged += HandlePropertyChangedFromViewModel;
+      get { return (int)GetValue(CellsLeftFromMiddleProperty); }
+      set { SetValue(CellsLeftFromMiddleProperty, value); }
+    }
 
-        HandlePropertyChangedFromViewModel(sender, new PropertyChangedEventArgs(nameof(_viewModel.ControlWidthLeft)));
+    // Using a DependencyProperty as the backing store for CellsLeftFromMiddle.  This enables animation, styling, binding, etc...
+    public static readonly DependencyProperty CellsLeftFromMiddleProperty =
+        DependencyProperty.Register("CellsLeftFromMiddle", typeof(int), typeof(CrosswordLineView), new PropertyMetadata(DependencyPropertyChanged));
+
+    public int CellsRightFromMiddle
+    {
+      get { return (int)GetValue(CellsRightFromMiddleProperty); }
+      set { SetValue(CellsRightFromMiddleProperty, value); }
+    }
+
+    // Using a DependencyProperty as the backing store for CellsRightFromMiddle.  This enables animation, styling, binding, etc...
+    public static readonly DependencyProperty CellsRightFromMiddleProperty =
+        DependencyProperty.Register("CellsRightFromMiddle", typeof(int), typeof(CrosswordLineView), new PropertyMetadata(DependencyPropertyChanged));
+
+    public string Word
+    {
+      get { return (string)GetValue(WordProperty); }
+      set { SetValue(WordProperty, value); }
+    }
+
+    // Using a DependencyProperty as the backing store for Word.  This enables animation, styling, binding, etc...
+    public static readonly DependencyProperty WordProperty =
+        DependencyProperty.Register("Word", typeof(string), typeof(CrosswordLineView), new PropertyMetadata(DependencyPropertyChanged));
+
+    //private void CrosswordLineView_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+    //{
+    //  _viewModel = (CrosswordLineViewModel)DataContext;
+    //  if (_viewModel is not null)
+    //  {
+    //    _viewModel.PropertyChanged += HandlePropertyChangedFromViewModel;
+
+    //    HandlePropertyChangedFromViewModel(sender, new PropertyChangedEventArgs(nameof(_viewModel.ControlWidthLeft)));
+    //  }
+    //}
+
+    private static void DependencyPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+      if (d is CrosswordLineView lineView)
+      {
+        lineView.HandlePropertyChanged(d, e);
       }
     }
 
-    private void HandlePropertyChangedFromViewModel(object sender_, PropertyChangedEventArgs e_)
+    private void HandlePropertyChanged(DependencyObject dependencyObject_, DependencyPropertyChangedEventArgs eventArgs_)
     {
-      if (e_.PropertyName == nameof(_viewModel.ControlWidthLeft)
-        || e_.PropertyName == nameof(_viewModel.LineItem.LineWord))
+      if (_viewModel == null)
       {
-        var chars = new char[_viewModel.ControlWidthLeft + _viewModel.ControlWidthRight + 1];
+        _viewModel = (CrosswordLineViewModel)DataContext;
+
+        if (_viewModel == null)
+        {
+          return;
+        }
+      }
+
+      if (CellsLeftFromMiddle != _currentLeft
+        || CellsRightFromMiddle != _currentRight
+        || Word != _currentWord)
+      {
+        if (_viewModel.SolutionCharacterNumber - 1 > CellsLeftFromMiddle
+          || _viewModel.Word.Length - _viewModel.SolutionCharacterNumber > CellsRightFromMiddle)
+        {
+          return;
+        }
+
+        var chars = new char[CellsLeftFromMiddle + CellsRightFromMiddle + 1];
 
         int positionToMark = 0;
 
-        for (int i = 0; i < _viewModel.LineItem.LineWord.Length; i++)
+        for (int i = 0; i < _viewModel.Word.Length; i++)
         {
-          int index = _viewModel.ControlWidthLeft - _viewModel.LineItem.SolutionCharacterNumberInLineWord + 1 + i;
+          int index = CellsLeftFromMiddle - _viewModel.SolutionCharacterNumber + 1 + i;
           chars[index] =
-            _viewModel.LineItem.LineWord[i];
+            _viewModel.Word[i];
 
-          if (i + 1 == _viewModel.LineItem.SolutionCharacterNumberInLineWord)
+          if (i + 1 == _viewModel.SolutionCharacterNumber)
           {
-            positionToMark = _viewModel.ControlWidthLeft - _viewModel.LineItem.SolutionCharacterNumberInLineWord + 1 + i;
+            positionToMark = CellsLeftFromMiddle - _viewModel.SolutionCharacterNumber + 1 + i;
           }
         }
 
@@ -64,12 +121,16 @@ namespace CrosswordCreator.Views
           if (i == positionToMark)
           {
             labelToAdd.BorderThickness = new Thickness(3,
-              _viewModel.LineItem.PlaceInCrossword == 1 ? 3 : 1,
+              _viewModel.IsFirstInCrossword ? 3 : 1,
               3,
-              _viewModel.LineItem.IsLastInCrossword ? 3 : 1);
+              _viewModel.IsLastInCrossword ? 3 : 1);
           }
           _container.Children.Add(labelToAdd);
         }
+
+        _currentLeft = CellsLeftFromMiddle;
+        _currentRight = CellsRightFromMiddle;
+        _currentWord = Word;
       }
     }
   }

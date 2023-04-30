@@ -63,11 +63,14 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="30"/>
+                                <ColumnDefinition Width="40"/>
                             </Grid.ColumnDefinitions>
-                            <views:CrosswordLineView Grid.Column="0" DataContext="{Binding }"/>
+                            <views:CrosswordLineView Grid.Column="0" 
+                                                     CellsLeftFromMiddle="{Binding Data.ControlWidthLeft, Source={StaticResource BindingProxy}}"
+                                                     CellsRightFromMiddle="{Binding Data.ControlWidthRight, Source={StaticResource BindingProxy}}"
+                                                     Word="{Binding Word}"/>
                             <StackPanel Grid.Column="1" Orientation="Horizontal">
-                                <TextBlock Margin="10 0 0 0" Text="{Binding LineItem.PlaceInCrossword, StringFormat={}{0}.}"
+                                <TextBlock Margin="10 0 0 0" Text="{Binding PlaceInCrossword, StringFormat={}{0}.}"
                                        VerticalAlignment="Center"
                                        FontSize="30"/>
                                 <Label Content="{Binding Clue}"
@@ -75,11 +78,11 @@
                                        FontSize="30"/>
                             </StackPanel>
                             <Button Grid.Column="2"
-                                    BorderThickness="0"
-                                    Background="Transparent"
+                                    Style="{StaticResource EditRowButtonStyle}"
                                     Command="{Binding Data.EditCommand, Source={StaticResource BindingProxy}}"
                                     CommandParameter="{Binding }">
-                                <Image Source="/Images/EditButton.png"/>
+                                <Image Source="/Images/EditButton.png"
+                                       Height="35" Width="35"/>
                             </Button>
                         </Grid>
                     </DataTemplate>

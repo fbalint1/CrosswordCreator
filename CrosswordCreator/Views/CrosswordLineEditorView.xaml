@@ -11,7 +11,8 @@
         Background="Transparent"
         AllowsTransparency="True"
         WindowStartupLocation="CenterScreen"
-        Height="310" Width="500">
+        SizeToContent="WidthAndHeight"
+        >
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -44,6 +45,35 @@
                 <Setter Property="Height" Value="60"/>
                 <Setter Property="FontSize" Value="30"/>
             </Style>
+            
+            <Storyboard x:Key="ShrinkSize">
+                <DoubleAnimation Storyboard.TargetProperty="Height"
+                                                     From="50" To="0" Duration="0:0:0:0.3"/>
+            </Storyboard>
+            <Storyboard x:Key="ExpandSize">
+                <DoubleAnimation Storyboard.TargetProperty="Height"
+                                                     From="0" To="50" Duration="0:0:0:0.3"/>
+            </Storyboard>
+
+            <Style x:Key="DisappearAnimation" TargetType="Grid">
+                <Setter Property="Height" Value="0"/>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding ShowCharacterChoice}" Value="True">
+                        <DataTrigger.EnterActions>
+                            <RemoveStoryboard BeginStoryboardName="ShrinkSize"/>
+                            <BeginStoryboard Storyboard="{StaticResource ExpandSize}"
+                                             x:Name="ExpandSize"/>
+                        </DataTrigger.EnterActions>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding ShowCharacterChoice}" Value="False">
+                        <DataTrigger.EnterActions>
+                            <RemoveStoryboard BeginStoryboardName="ExpandSize"/>
+                            <BeginStoryboard Storyboard="{StaticResource ShrinkSize}"
+                                             x:Name="ShrinkSize"/>
+                        </DataTrigger.EnterActions>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
         </ResourceDictionary>
     </Window.Resources>
 
@@ -57,12 +87,12 @@
             BorderThickness="1">
         <Grid Background="Transparent" MouseLeftButtonDown="Grid_MouseLeftButtonDown">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="8*"/>
-                <ColumnDefinition Width="14*"/>
-                <ColumnDefinition Width="8*"/>
+                <ColumnDefinition Width="150"/>
+                <ColumnDefinition Width="*" MinWidth="350"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="40"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -85,20 +115,26 @@
                         CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"/>
             </StackPanel>
 
-            <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
-                   Content="Megoldás betűje a sorban:"
-                   Style="{StaticResource LabelStyle}"
-                   HorizontalAlignment="Left"/>
-            
-            <Label Grid.Row="1" Grid.Column="2"
-                   Content="{Binding Character}"
-                   Style="{StaticResource LabelStyle}"
-                   HorizontalAlignment="Left"
-                   FontWeight="Bold"/>
+            <StackPanel Grid.Row="1" Grid.ColumnSpan="3"
+                        Orientation="Horizontal">
+                <Label Grid.Row="1" Grid.ColumnSpan="2"
+                       Content="Megoldás betűje sorban:"
+                       Style="{StaticResource LabelStyle}"
+                       HorizontalAlignment="Left"/>
+
+                <Label Grid.Row="1" Grid.Column="2"
+                       Content="{Binding Character}"
+                       Style="{StaticResource LabelStyle}"
+                       HorizontalAlignment="Left"
+                       FontWeight="Bold"/>
+            </StackPanel>
 
             <Label Grid.Row="2"
                    Content="Szó:"
                    Style="{StaticResource LabelStyle}"/>
+
+            <!--<RichTextBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2"
+                         Document="{Binding Documentt}"/>-->
 
             <TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2"
                      Text="{Binding LineWord, UpdateSourceTrigger=PropertyChanged}"
@@ -109,12 +145,63 @@
                     </Style>
                 </TextBox.Resources>
             </TextBox>
-            
-            <Label Grid.Row="3"
+
+            <Grid Grid.Row="3" Grid.ColumnSpan="3"
+                  Style="{StaticResource DisappearAnimation}"
+                  Height="{Binding ShowCharactorChoice, Converter={StaticResource BooleanToHeightConverter}}"
+                  Visibility="{Binding CharacterChoiceFirstVisibility, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Label Content="Betű választás:"
+                       Style="{StaticResource LabelStyle}"
+                       FontSize="22"/>
+
+                <Grid Grid.Column="1"
+                      HorizontalAlignment="Stretch">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Button Style="{StaticResource ButtonStyle}"
+                            Command="{Binding SelectCharacterCommand}"
+                            CommandParameter="False"
+                            Height="40"
+                            HorizontalAlignment="Stretch"
+                            Margin="0 4 0 4">
+                        <Button.Resources>
+                            <Style TargetType="{x:Type Border}">
+                                <Setter Property="CornerRadius" Value="7 0 0 7"/>
+                            </Style>
+                        </Button.Resources>
+                        <Image Source="../Images/LeftArrow.png" Margin="0 0 0 1.5"/>
+                    </Button>
+                    <Button Grid.Column="1" 
+                            Style="{StaticResource ButtonStyle}"
+                            Command="{Binding SelectCharacterCommand}"
+                            CommandParameter="True"
+                            Height="40"
+                            HorizontalAlignment="Stretch"
+                            Margin="0 4 4 4">
+                        <Button.Resources>
+                            <Style TargetType="{x:Type Border}">
+                                <Setter Property="CornerRadius" Value="0 7 7 0"/>
+                            </Style>
+                        </Button.Resources>
+                        <Image Source="../Images/RightArrow.png" Margin="0 1.5 0 0"/>
+                    </Button>
+                </Grid>
+                
+            </Grid>
+
+
+            <Label Grid.Row="4"
                    Content="Segítség:"
                    Style="{StaticResource LabelStyle}"/>
 
-            <TextBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2"
+            <TextBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2"
                      Text="{Binding Clue, UpdateSourceTrigger=PropertyChanged}"
                      Style="{StaticResource TextBoxStyle}">
                 <TextBox.Resources>
@@ -124,7 +211,7 @@
                 </TextBox.Resources>
             </TextBox>
 
-            <Grid Grid.Row="4" Grid.ColumnSpan="3">
+            <Grid Grid.Row="5" Grid.ColumnSpan="3">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
                     <ColumnDefinition />
@@ -146,10 +233,14 @@
                         Command="{Binding SaveCommand}"
                         CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"
                         ToolTip="{Binding SaveButtonTooltip}"
-                        ToolTipService.ShowOnDisabled="True">
+                        ToolTipService.ShowOnDisabled="True"
+                        ToolTipService.InitialShowDelay="0">
                     <Button.Resources>
                         <Style TargetType="{x:Type Border}">
                             <Setter Property="CornerRadius" Value="10"/>
+                        </Style>
+                        <Style TargetType="{x:Type ToolTip}">
+                            <Setter Property="FontSize" Value="20"/>
                         </Style>
                     </Button.Resources>
                 </Button>

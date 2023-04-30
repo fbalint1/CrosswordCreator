@@ -9,10 +9,18 @@
 
   <ItemGroup>
     <None Remove="Images\EditButton.png" />
+    <None Remove="Images\LeftArrow.png" />
+    <None Remove="Images\RightArrow.png" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="Images\EditButton.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\LeftArrow.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\RightArrow.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

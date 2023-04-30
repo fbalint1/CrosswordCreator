@@ -15,21 +15,27 @@ namespace CrosswordCreator.ViewModels
     {
       Rows = new ObservableCollection<CrosswordLineViewModel>
       {
-        new CrosswordLineViewModel(new CrosswordLine() { LineWord = "VALAMI", SolutionCharacterNumberInLineWord = 3, Clue = "Ez egy clue", PlaceInCrossword = 1 }) { ControlWidthLeft = 9, ControlWidthRight = 4 },
-        new CrosswordLineViewModel(new CrosswordLine() { LineWord = "EGYENLŐTLENSÉG", SolutionCharacterNumberInLineWord = 10, Clue = "Ez egy clue", PlaceInCrossword = 2 }) { ControlWidthLeft = 9, ControlWidthRight = 4 },
-        new CrosswordLineViewModel(new CrosswordLine() { LineWord = "KANÁL", SolutionCharacterNumberInLineWord = 3, Clue = "Ez egy clue", PlaceInCrossword = 3, IsLastInCrossword = true }) { ControlWidthLeft = 9, ControlWidthRight = 4 }
+        new CrosswordLineViewModel(new CrosswordLine() { LineWord = "VALAMI", SolutionCharacterNumberInLineWord = 3, Clue = "Ez egy clue", PlaceInCrossword = 1 }),
+        new CrosswordLineViewModel(new CrosswordLine() { LineWord = "EGYENLŐTLENSÉG", SolutionCharacterNumberInLineWord = 10, Clue = "Ez egy clue", PlaceInCrossword = 2 }),
+        new CrosswordLineViewModel(new CrosswordLine() { LineWord = "KANÁL", SolutionCharacterNumberInLineWord = 3, Clue = "Ez egy clue", PlaceInCrossword = 3, IsLastInCrossword = true })
       };
+
+      RecalculateGridMetrics();
 
       EditCommand = new RelayCommand(row =>
       {
         if (row is CrosswordLineViewModel crosswordLineViewModel)
         {
-          var editorViewModel = new CrosswordLineEditorViewModel(crosswordLineViewModel.LineItem);
+          var editorViewModel = new CrosswordLineEditorViewModel(crosswordLineViewModel.Word, crosswordLineViewModel.Clue, crosswordLineViewModel.SolutionCharacterNumber);
           var editorView = new CrosswordLineEditorView(editorViewModel);
           editorView.ShowDialog();
 
           if (editorViewModel.ShouldUpateMainWindow)
           {
+            crosswordLineViewModel.Word = editorViewModel.LineWord;
+            crosswordLineViewModel.Clue = editorViewModel.Clue;
+            crosswordLineViewModel.SolutionCharacterNumber = editorViewModel.CharacterPlaceInWord;
+
             RecalculateGridMetrics();
           }
         }
@@ -37,6 +43,9 @@ namespace CrosswordCreator.ViewModels
     }
 
     public ObservableCollection<CrosswordLineViewModel> Rows { get; set; }
+
+    public int ControlWidthLeft { get; set; }
+    public int ControlWidthRight { get; set; }  
 
     public ICommand EditCommand { get; private set; }
 
@@ -47,19 +56,17 @@ namespace CrosswordCreator.ViewModels
 
       foreach (var row in Rows)
       {
-        var lengthLeft = row.LineItem.SolutionCharacterNumberInLineWord - 1;
+        var lengthLeft = row.SolutionCharacterNumber - 1;
         widthLeft = lengthLeft > widthLeft ? lengthLeft : widthLeft;
 
-        var lengthRight = row.LineItem.LineWord.Length - row.LineItem.SolutionCharacterNumberInLineWord;
+        var lengthRight = row.Word.Length - row.SolutionCharacterNumber;
         widthRight = lengthRight > widthRight ? lengthRight : widthRight; 
       }
 
-      foreach (var row in Rows)
-      {
-        row.ControlWidthLeft = widthLeft;
-        row.ControlWidthRight = widthRight;
-        row.NotifyUpdates();
-      }
+      ControlWidthLeft = widthLeft;
+      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ControlWidthLeft)));
+      ControlWidthRight = widthRight;
+      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ControlWidthRight))); 
     }
   }
 }
