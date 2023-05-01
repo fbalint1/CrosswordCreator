@@ -51,17 +51,6 @@ namespace CrosswordCreator.Views
     public static readonly DependencyProperty WordProperty =
         DependencyProperty.Register("Word", typeof(string), typeof(CrosswordLineView), new PropertyMetadata(DependencyPropertyChanged));
 
-    //private void CrosswordLineView_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
-    //{
-    //  _viewModel = (CrosswordLineViewModel)DataContext;
-    //  if (_viewModel is not null)
-    //  {
-    //    _viewModel.PropertyChanged += HandlePropertyChangedFromViewModel;
-
-    //    HandlePropertyChangedFromViewModel(sender, new PropertyChangedEventArgs(nameof(_viewModel.ControlWidthLeft)));
-    //  }
-    //}
-
     private static void DependencyPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
       if (d is CrosswordLineView lineView)

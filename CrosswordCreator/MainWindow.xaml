@@ -36,7 +36,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="30"/>
                 <RowDefinition Height="*"/>
-                <RowDefinition Height="40"/>
+                <RowDefinition Height="50"/>
             </Grid.RowDefinitions>
 
             <StackPanel Grid.Row="0" Grid.Column="0"
@@ -91,8 +91,11 @@
 
             <StackPanel Grid.Row="2" Grid.ColumnSpan="2"
                         Orientation="Horizontal">
-                <Button Content="Új" Style="{StaticResource ButtonStyle}" />
+                <Button Content="Új" 
+                        Style="{StaticResource ButtonStyle}"
+                        Width="70"/>
                 <Button Content="Mentés" Style="{StaticResource ButtonStyle}"/>
+                <Button Content="Mappa választása" Style="{StaticResource ButtonStyle}"/>
 
             </StackPanel>
         </Grid>
