@@ -30,6 +30,19 @@
                 <Setter Property="HorizontalAlignment" Value="Stretch"/>
                 <Setter Property="FontSize" Value="30"/>
             </Style>
+            
+            <Style x:Key="RichTextBoxStyle" TargetType="{x:Type RichTextBox}">
+                <Setter Property="FontWeight" Value="Bold"/>
+                <Setter Property="Background" Value="LightGray"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                <Setter Property="Margin" Value="0 5 5 5"/>
+                <Setter Property="BorderBrush" Value="Black"/>
+                <Setter Property="Height" Value="60"/>
+                <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                <Setter Property="VerticalAlignment" Value="Stretch"/>
+                <Setter Property="FontSize" Value="30"/>
+            </Style>
 
             <Style x:Key="LabelStyle" TargetType="{x:Type Label}">
                 <Setter Property="HorizontalAlignment" Value="Right"/>
@@ -133,10 +146,21 @@
                    Content="Szó:"
                    Style="{StaticResource LabelStyle}"/>
 
-            <!--<RichTextBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2"
-                         Document="{Binding Documentt}"/>-->
+            <RichTextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2"
+                         x:Name="WordTextBox"
+                         Style="{StaticResource RichTextBoxStyle}"
+                         AcceptsReturn="False"
+                         IsUndoEnabled="False"
+                         MaxWidth="400"
+                         Padding="0 8 0 0">
+                <RichTextBox.Resources>
+                    <Style TargetType="{x:Type Border}">
+                        <Setter Property="CornerRadius" Value="10"/>
+                    </Style>
+                </RichTextBox.Resources>
+            </RichTextBox>
 
-            <TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2"
+            <!--<TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2"
                      Text="{Binding LineWord, UpdateSourceTrigger=PropertyChanged}"
                      Style="{StaticResource TextBoxStyle}">
                 <TextBox.Resources>
@@ -144,11 +168,11 @@
                         <Setter Property="CornerRadius" Value="10"/>
                     </Style>
                 </TextBox.Resources>
-            </TextBox>
+            </TextBox>-->
 
             <Grid Grid.Row="3" Grid.ColumnSpan="3"
                   Style="{StaticResource DisappearAnimation}"
-                  Height="{Binding ShowCharactorChoice, Converter={StaticResource BooleanToHeightConverter}}"
+                  Height="{Binding ShowCharacterChoice, Converter={StaticResource BooleanToHeightConverter}}"
                   Visibility="{Binding CharacterChoiceFirstVisibility, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="150"/>

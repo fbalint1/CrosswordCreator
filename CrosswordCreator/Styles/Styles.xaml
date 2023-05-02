@@ -4,6 +4,7 @@
     
     <utilities:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
     <utilities:BooleanToHeightConverter x:Key="BooleanToHeightConverter"/>
+    <utilities:BackgroundConverter x:Key="BackgroundConverter"/>
 
     <Style x:Key="ButtonStyle" TargetType="{x:Type Button}">
         <Setter Property="Height" Value="40"/>

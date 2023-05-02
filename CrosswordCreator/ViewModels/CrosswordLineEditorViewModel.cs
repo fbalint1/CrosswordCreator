@@ -1,13 +1,9 @@
-﻿using CrosswordCreator.Models;
-using CrosswordCreator.Utilities;
+﻿using CrosswordCreator.Utilities;
 using System;
 using System.ComponentModel;
-using System.Drawing;
 using System.Linq;
 using System.Windows;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
 
 namespace CrosswordCreator.ViewModels
 {
@@ -32,7 +28,7 @@ namespace CrosswordCreator.ViewModels
 
     public CrosswordLineEditorViewModel(string word_, string clue_, int characterPlaceInWord_)
     {
-      _requiredCharacter = word_[characterPlaceInWord_ - 1];
+      _requiredCharacter = word_[characterPlaceInWord_];
       _startingWord = word_;
       _startingClue = clue_;
       _startingCharacterPosition = characterPlaceInWord_;
@@ -69,11 +65,11 @@ namespace CrosswordCreator.ViewModels
         {
           if (ascending)
           {
-            for (int i = _characterPlaceInWord; i < _lineWord.Length; i++)
+            for (int i = _characterPlaceInWord + 1; i < _lineWord.Length; i++)
             {
               if (_lineWord[i] == _requiredCharacter)
               {
-                _characterPlaceInWord = i + 1;
+                _characterPlaceInWord = i;
                 _changed = true;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SaveButtonTooltip)));
                 break;
@@ -82,11 +78,11 @@ namespace CrosswordCreator.ViewModels
           }
           else
           {
-            for (int i = _characterPlaceInWord - 2; i >= 0; i--)
+            for (int i = _characterPlaceInWord - 1; i >= 0; i--)
             {
               if (_lineWord[i] == _requiredCharacter)
               {
-                _characterPlaceInWord = i + 1;
+                _characterPlaceInWord = i;
                 _changed = true;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SaveButtonTooltip)));
                 break;
@@ -110,24 +106,6 @@ namespace CrosswordCreator.ViewModels
 
     public bool CharacterChoiceFirstVisibility => _charChoiceVisibe;
     
-    //public FlowDocument Documentt
-    //{
-    //  get
-    //  {
-    //    var doc = new FlowDocument();
-    //    var paragraph = new Paragraph();
-        
-    //    var indexOf = _lineWord.IndexOf(_requiredCharacter);
-
-    //    paragraph.Inlines.Add(new Run(_lineWord.Substring(0, indexOf)));
-    //    paragraph.Inlines.Add(new Run(_lineWord[indexOf].ToString()) { Foreground = Brushes.Red });
-    //    paragraph.Inlines.Add(new Run(_lineWord.Substring(indexOf + 1, _lineWord.Length)));
-
-    //    doc.Blocks.Add(paragraph);
-    //    return doc;
-    //  }
-    //}
-
     public string LineWord
     {
       get { return _lineWord; }
@@ -145,7 +123,20 @@ namespace CrosswordCreator.ViewModels
         if (_lineWord.Length < _characterPlaceInWord
           || _lineWord[_characterPlaceInWord] != _requiredCharacter)
         {
-          _characterPlaceInWord = _lineWord.IndexOf(_requiredCharacter);
+          if (_characterPlaceInWord != 0 
+            && _lineWord[_characterPlaceInWord - 1] == _requiredCharacter)
+          {
+            _characterPlaceInWord--;
+          }
+          else if (_characterPlaceInWord + 1 < _lineWord.Length
+            && _lineWord[_characterPlaceInWord + 1] == _requiredCharacter)
+          {
+            _characterPlaceInWord++;
+          }
+          else
+          {
+            _characterPlaceInWord = _lineWord.IndexOf(_requiredCharacter);
+          }
         }
 
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LineWord)));

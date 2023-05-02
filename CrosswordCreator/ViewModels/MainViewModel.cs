@@ -28,9 +28,9 @@ namespace CrosswordCreator.ViewModels
 
       Rows = new ObservableCollection<CrosswordLineViewModel>
       {
-        new CrosswordLineViewModel(new CrosswordLine() { LineWord = "VALAMI", SolutionCharacterNumberInLineWord = 3, Clue = "Ez egy clue", PlaceInCrossword = 1 }),
-        new CrosswordLineViewModel(new CrosswordLine() { LineWord = "EGYENLŐTLENSÉG", SolutionCharacterNumberInLineWord = 10, Clue = "Ez egy clue", PlaceInCrossword = 2 }),
-        new CrosswordLineViewModel(new CrosswordLine() { LineWord = "KANÁL", SolutionCharacterNumberInLineWord = 3, Clue = "Ez egy clue", PlaceInCrossword = 3, IsLastInCrossword = true })
+        new CrosswordLineViewModel(new CrosswordLine() { LineWord = "VALAMI", SolutionCharacterNumberInLineWord = 2, Clue = "Ez egy clue", PlaceInCrossword = 1 }),
+        new CrosswordLineViewModel(new CrosswordLine() { LineWord = "EGYENLŐTLENSÉG", SolutionCharacterNumberInLineWord = 9, Clue = "Ez egy clue", PlaceInCrossword = 2 }),
+        new CrosswordLineViewModel(new CrosswordLine() { LineWord = "KANÁL", SolutionCharacterNumberInLineWord = 2, Clue = "Ez egy clue", PlaceInCrossword = 3, IsLastInCrossword = true })
       };
 
       RecalculateGridMetrics();
@@ -59,13 +59,13 @@ namespace CrosswordCreator.ViewModels
           return;
         }
 
-        var dialog = new FolderBrowserDialog();
-        dialog.ShowDialog();
+        //var dialog = new FolderBrowserDialog();
+        //dialog.ShowDialog();
 
-        if (dialog.Result == DialogResult.Ok)
-        {
-          _selectedPath = dialog.SelectedPath;
-        }
+        //if (dialog.Result == DialogResult.Ok)
+        //{
+        //  _selectedPath = dialog.SelectedPath;
+        //}
       }, _ => !_isLoading && !_isSaving);
 
       CancelNewCrosswordCommand = new RelayCommand(_ =>
@@ -117,10 +117,10 @@ namespace CrosswordCreator.ViewModels
 
       foreach (var row in Rows)
       {
-        var lengthLeft = row.SolutionCharacterNumber - 1;
+        var lengthLeft = row.SolutionCharacterNumber;
         widthLeft = lengthLeft > widthLeft ? lengthLeft : widthLeft;
 
-        var lengthRight = row.Word.Length - row.SolutionCharacterNumber;
+        var lengthRight = row.Word.Length - row.SolutionCharacterNumber - 1;
         widthRight = lengthRight > widthRight ? lengthRight : widthRight; 
       }
 
@@ -152,7 +152,7 @@ namespace CrosswordCreator.ViewModels
         return;
       }
 
-      _selectedPath = File.ReadAllLines(preferencesFile)[0];
+      //_selectedPath = File.ReadAllLines(preferencesFile)[0];
     }
 
     public void Dispose()

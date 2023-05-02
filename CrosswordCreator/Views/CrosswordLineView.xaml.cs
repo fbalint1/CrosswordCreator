@@ -75,8 +75,8 @@ namespace CrosswordCreator.Views
         || CellsRightFromMiddle != _currentRight
         || Word != _currentWord)
       {
-        if (_viewModel.SolutionCharacterNumber - 1 > CellsLeftFromMiddle
-          || _viewModel.Word.Length - _viewModel.SolutionCharacterNumber > CellsRightFromMiddle)
+        if (_viewModel.SolutionCharacterNumber > CellsLeftFromMiddle
+          || _viewModel.Word.Length - _viewModel.SolutionCharacterNumber - 1 > CellsRightFromMiddle)
         {
           return;
         }
@@ -87,13 +87,12 @@ namespace CrosswordCreator.Views
 
         for (int i = 0; i < _viewModel.Word.Length; i++)
         {
-          int index = CellsLeftFromMiddle - _viewModel.SolutionCharacterNumber + 1 + i;
-          chars[index] =
-            _viewModel.Word[i];
+          int index = CellsLeftFromMiddle - _viewModel.SolutionCharacterNumber + i;
+          chars[index] = _viewModel.Word[i];
 
-          if (i + 1 == _viewModel.SolutionCharacterNumber)
+          if (i == _viewModel.SolutionCharacterNumber)
           {
-            positionToMark = CellsLeftFromMiddle - _viewModel.SolutionCharacterNumber + 1 + i;
+            positionToMark = CellsLeftFromMiddle - _viewModel.SolutionCharacterNumber + i;
           }
         }
 
