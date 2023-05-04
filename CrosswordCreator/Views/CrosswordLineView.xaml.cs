@@ -1,5 +1,4 @@
 ﻿using CrosswordCreator.ViewModels;
-using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -55,11 +54,11 @@ namespace CrosswordCreator.Views
     {
       if (d is CrosswordLineView lineView)
       {
-        lineView.HandlePropertyChanged(d, e);
+        lineView.HandlePropertyChanged();
       }
     }
 
-    private void HandlePropertyChanged(DependencyObject dependencyObject_, DependencyPropertyChangedEventArgs eventArgs_)
+    private void HandlePropertyChanged()
     {
       if (_viewModel == null)
       {

@@ -5,6 +5,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
+using System.Windows.Forms;
 using System.Windows.Input;
 
 namespace CrosswordCreator.ViewModels
@@ -59,13 +60,12 @@ namespace CrosswordCreator.ViewModels
           return;
         }
 
-        //var dialog = new FolderBrowserDialog();
-        //dialog.ShowDialog();
+        var dialog = new FolderBrowserDialog();
 
-        //if (dialog.Result == DialogResult.Ok)
-        //{
-        //  _selectedPath = dialog.SelectedPath;
-        //}
+        if (dialog.ShowDialog() == DialogResult.OK)
+        {
+          _selectedPath = dialog.SelectedPath;
+        }
       }, _ => !_isLoading && !_isSaving);
 
       CancelNewCrosswordCommand = new RelayCommand(_ =>
@@ -152,7 +152,7 @@ namespace CrosswordCreator.ViewModels
         return;
       }
 
-      //_selectedPath = File.ReadAllLines(preferencesFile)[0];
+      _selectedPath = File.ReadAllLines(preferencesFile)[0];
     }
 
     public void Dispose()

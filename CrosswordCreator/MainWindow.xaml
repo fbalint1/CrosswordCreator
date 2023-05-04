@@ -91,11 +91,16 @@
 
             <StackPanel Grid.Row="2" Grid.ColumnSpan="2"
                         Orientation="Horizontal">
-                <Button Content="Új" 
-                        Style="{StaticResource ButtonStyle}"
-                        Width="70"/>
-                <Button Content="Mentés" Style="{StaticResource ButtonStyle}"/>
-                <Button Content="Mappa választása" Style="{StaticResource ButtonStyle}"/>
+                <Button Content="Új"
+                        Width="70"
+                        Style="{StaticResource ButtonPressStyle}"
+                        Command="{Binding NewCrosswordCommand}"/>
+                <Button Content="Mentés"
+                        Style="{StaticResource ButtonPressStyle}"
+                        Command="{Binding SaveCrosswordCommand}"/>
+                <Button Content="Mappa választása"
+                        Style="{StaticResource ButtonPressStyle}"
+                        Command="{Binding SelectWorkingFolderCommand}"/>
 
             </StackPanel>
         </Grid>

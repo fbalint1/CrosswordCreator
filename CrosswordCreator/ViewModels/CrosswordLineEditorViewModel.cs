@@ -41,10 +41,11 @@ namespace CrosswordCreator.ViewModels
 
       ResetCommand = new RelayCommand(_ =>
       {
+        _changed = false;
+        _characterPlaceInWord = _startingCharacterPosition;
         LineWord = _startingWord;
         Clue = _startingClue;
-        _characterPlaceInWord = _startingCharacterPosition;
-        _changed = false;
+        DataChangedInViewModel?.Invoke();
       });
       SaveCommand = new RelayCommand(w =>
       {
@@ -53,7 +54,7 @@ namespace CrosswordCreator.ViewModels
           _wasSaved = true;
           window.Close();
         }
-      }, _ => _changed && IsValid);
+      }, _ => IsChanged && IsValid);
       CancelCommand = new RelayCommand(w =>
       {
         if (w is Window window)
@@ -73,7 +74,6 @@ namespace CrosswordCreator.ViewModels
               {
                 _characterPlaceInWord = i;
                 _changed = true;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SaveButtonTooltip)));
                 break;
               }
             }
@@ -86,12 +86,17 @@ namespace CrosswordCreator.ViewModels
               {
                 _characterPlaceInWord = i;
                 _changed = true;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SaveButtonTooltip)));
                 break;
               }
             }
           }
-          DataChangedInViewModel?.Invoke();
+
+          if (_changed)
+          {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsChanged)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SaveButtonTooltip)));
+            DataChangedInViewModel?.Invoke();
+          }
         }
       });
     }
@@ -115,13 +120,13 @@ namespace CrosswordCreator.ViewModels
       get { return _lineWord; }
       set
       {
-        if (value.ToUpper().Equals(_lineWord))
+        var upperValue = value.ToUpper();
+        if (upperValue.Equals(_lineWord))
         {
           return;
         }
 
-        _lineWord = value.ToUpper();
-        _changed = !_startingWord.Equals(_lineWord);
+        _lineWord = upperValue;
 
         if (!_charChoiceVisibe)
         {
@@ -158,6 +163,7 @@ namespace CrosswordCreator.ViewModels
 
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LineWord)));
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsValid)));
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsChanged)));
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SaveButtonTooltip)));
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ShowCharacterChoice)));
       }
@@ -171,6 +177,7 @@ namespace CrosswordCreator.ViewModels
         _clue = value;
         _changed = true;
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Clue)));
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsChanged)));
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SaveButtonTooltip)));
       }
     }
@@ -196,6 +203,7 @@ namespace CrosswordCreator.ViewModels
 
     public bool ShouldUpateMainWindow => _wasSaved;
 
+    private bool IsChanged => !_startingWord.Equals(_lineWord) || _changed;
     private bool IsValid => _lineWord.Contains(Character);
   }
 }

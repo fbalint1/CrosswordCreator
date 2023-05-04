@@ -161,16 +161,6 @@
                 </RichTextBox.Resources>
             </RichTextBox>
 
-            <!--<TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2"
-                     Text="{Binding LineWord, UpdateSourceTrigger=PropertyChanged}"
-                     Style="{StaticResource TextBoxStyle}">
-                <TextBox.Resources>
-                    <Style TargetType="{x:Type Border}">
-                        <Setter Property="CornerRadius" Value="10"/>
-                    </Style>
-                </TextBox.Resources>
-            </TextBox>-->
-
             <Grid Grid.Row="3" Grid.ColumnSpan="3"
                   Style="{StaticResource DisappearAnimation}"
                   Height="{Binding ShowCharacterChoice, Converter={StaticResource BooleanToHeightConverter}}"
