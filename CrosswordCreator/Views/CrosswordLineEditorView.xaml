@@ -150,6 +150,7 @@
                          x:Name="WordTextBox"
                          Style="{StaticResource RichTextBoxStyle}"
                          AcceptsReturn="False"
+                         AcceptsTab="False"
                          IsUndoEnabled="False"
                          MaxWidth="400"
                          Padding="0 8 0 0">

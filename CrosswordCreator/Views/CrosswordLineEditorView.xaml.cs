@@ -32,6 +32,7 @@ namespace CrosswordCreator.Views
     {
       DataContext = crosswordLineEditorViewModel_;
       _viewModel = crosswordLineEditorViewModel_;
+      _viewModel.DataChangedInViewModel += _viewModel_DataChangedInViewModel;
 
       WordTextBox.Document.Blocks.Clear();
 
@@ -42,15 +43,32 @@ namespace CrosswordCreator.Views
       HighlightCharacter(WordTextBox);
     }
 
+    private void _viewModel_DataChangedInViewModel()
+    {
+      HighlightCharacter(WordTextBox);
+    }
+
     private void Grid_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) => DragMove();
 
     private void WordTextBox_TextChanged(object sender, TextChangedEventArgs e)
     {
       var richTextBox = sender as RichTextBox;
-      var newText = new TextRange(richTextBox.Document.ContentStart, richTextBox.Document.ContentEnd)
+
+      var boxRange = new TextRange(richTextBox.Document.ContentStart, richTextBox.Document.ContentEnd);
+
+      var newText = boxRange
         .Text
         .Replace("\r\n", string.Empty)
         .Trim();
+
+      var upperNewText = newText.ToUpper();
+
+      if (!newText.Equals(upperNewText))
+      {
+        var caretOffset = richTextBox.Document.ContentStart.GetOffsetToPosition(richTextBox.CaretPosition);
+        boxRange.Text = upperNewText;
+        richTextBox.CaretPosition = richTextBox.Document.ContentStart.GetPositionAtOffset(caretOffset);
+      }
 
       if (!newText.Equals(_viewModel.LineWord))
       {
@@ -62,10 +80,18 @@ namespace CrosswordCreator.Views
     private void HighlightCharacter(RichTextBox richTextBox_)
     {
       var newTextRange = new TextRange(richTextBox_.Document.ContentStart, richTextBox_.Document.ContentEnd);
-      
+
       newTextRange.ApplyPropertyValue(ForegroundProperty, Brushes.Black);
 
+      if (_viewModel.CharacterPlaceInWord == -1)
+      {
+        // No point in continuing if the required character is not there
+        return;
+      }
+
       var currentPosition = richTextBox_.Document.ContentStart;
+
+      var actualCharactersPassed = 0;
 
       while (currentPosition != null)
       {
@@ -73,11 +99,9 @@ namespace CrosswordCreator.Views
         {
           var text = currentPosition.GetTextInRun(LogicalDirection.Forward);
 
-          var startIndex = text.IndexOf(_viewModel.LineWord);
-
-          if (startIndex >= 0)
+          if (text.Length + actualCharactersPassed > _viewModel.CharacterPlaceInWord)
           {
-            var startPosition = currentPosition.GetPositionAtOffset(startIndex + _viewModel.CharacterPlaceInWord);
+            var startPosition = currentPosition.GetPositionAtOffset(_viewModel.CharacterPlaceInWord - actualCharactersPassed);
             var endPosition = startPosition.GetPositionAtOffset(1);
 
             var range = new TextRange(startPosition, endPosition);
@@ -86,6 +110,8 @@ namespace CrosswordCreator.Views
             richTextBox_.InvalidateVisual();
             break;
           }
+
+          actualCharactersPassed += text.Length;
         }
 
         currentPosition = currentPosition.GetNextContextPosition(LogicalDirection.Forward);

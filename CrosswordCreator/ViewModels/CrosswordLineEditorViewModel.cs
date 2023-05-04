@@ -7,6 +7,8 @@ using System.Windows.Input;
 
 namespace CrosswordCreator.ViewModels
 {
+  public delegate void DataChangedInViewModelHandler();
+
   public class CrosswordLineEditorViewModel : INotifyPropertyChanged
   {
     private readonly char _requiredCharacter;
@@ -89,11 +91,13 @@ namespace CrosswordCreator.ViewModels
               }
             }
           }
+          DataChangedInViewModel?.Invoke();
         }
       });
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
+    public event DataChangedInViewModelHandler? DataChangedInViewModel;
 
     public ICommand ResetCommand { get; private set; }
     public ICommand SaveCommand { get; private set; }
@@ -105,14 +109,19 @@ namespace CrosswordCreator.ViewModels
     public bool ShowCharacterChoice => _lineWord.Count(c => c == _requiredCharacter) > 1;
 
     public bool CharacterChoiceFirstVisibility => _charChoiceVisibe;
-    
+
     public string LineWord
     {
       get { return _lineWord; }
       set
       {
+        if (value.ToUpper().Equals(_lineWord))
+        {
+          return;
+        }
+
         _lineWord = value.ToUpper();
-        _changed = true;
+        _changed = !_startingWord.Equals(_lineWord);
 
         if (!_charChoiceVisibe)
         {
@@ -120,23 +129,31 @@ namespace CrosswordCreator.ViewModels
           PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CharacterChoiceFirstVisibility)));
         }
 
-        if (_lineWord.Length < _characterPlaceInWord
-          || _lineWord[_characterPlaceInWord] != _requiredCharacter)
+        if (_characterPlaceInWord >= 0
+          && _lineWord.Length > _characterPlaceInWord)
         {
-          if (_characterPlaceInWord != 0 
-            && _lineWord[_characterPlaceInWord - 1] == _requiredCharacter)
+          if (_lineWord[_characterPlaceInWord] != _requiredCharacter)
           {
-            _characterPlaceInWord--;
+            if (_characterPlaceInWord != 0
+              && _lineWord.Length > _characterPlaceInWord
+              && _lineWord[_characterPlaceInWord - 1] == _requiredCharacter)
+            {
+              _characterPlaceInWord--;
+            }
+            else if (_characterPlaceInWord + 1 < _lineWord.Length
+              && _lineWord[_characterPlaceInWord + 1] == _requiredCharacter)
+            {
+              _characterPlaceInWord++;
+            }
+            else
+            {
+              _characterPlaceInWord = _lineWord.IndexOf(_requiredCharacter);
+            }
           }
-          else if (_characterPlaceInWord + 1 < _lineWord.Length
-            && _lineWord[_characterPlaceInWord + 1] == _requiredCharacter)
-          {
-            _characterPlaceInWord++;
-          }
-          else
-          {
-            _characterPlaceInWord = _lineWord.IndexOf(_requiredCharacter);
-          }
+        }
+        else
+        {
+          _characterPlaceInWord = _lineWord.IndexOf(_requiredCharacter);
         }
 
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LineWord)));
@@ -176,7 +193,7 @@ namespace CrosswordCreator.ViewModels
         return null;
       }
     }
-    
+
     public bool ShouldUpateMainWindow => _wasSaved;
 
     private bool IsValid => _lineWord.Contains(Character);
