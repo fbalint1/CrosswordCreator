@@ -89,20 +89,60 @@
                 </ListView.ItemTemplate>
             </ListView>
 
-            <StackPanel Grid.Row="2" Grid.ColumnSpan="2"
-                        Orientation="Horizontal">
-                <Button Content="Új"
+            <Grid Grid.Row="2" Grid.ColumnSpan="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="100"/>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" Content="Új"
                         Width="70"
-                        Style="{StaticResource ButtonPressStyle}"
+                        Style="{StaticResource ButtonStyle}"
                         Command="{Binding NewCrosswordCommand}"/>
-                <Button Content="Mentés"
-                        Style="{StaticResource ButtonPressStyle}"
+                <Button Grid.Column="1" Content="Mentés"
+                        Width="95"
+                        Style="{StaticResource FadingButtonStyle}"
                         Command="{Binding SaveCrosswordCommand}"/>
-                <Button Content="Mappa választása"
-                        Style="{StaticResource ButtonPressStyle}"
+                <Button Grid.Column="2" Content="Mappa választása"
+                        Width="210"
+                        Style="{StaticResource FadingButtonStyle}"
                         Command="{Binding SelectWorkingFolderCommand}"/>
 
-            </StackPanel>
+                <StackPanel Grid.Column="0" Grid.ColumnSpan="3"
+                            Width="0"
+                            Style="{StaticResource ExpandingStackPanel}"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Left"
+                            Margin="5">
+                    <TextBox Text="{Binding NewCrosswordText, UpdateSourceTrigger=PropertyChanged}"
+                             Style="{StaticResource InputTextBoxStyle}" 
+                             Width="315" Height="40"
+                             FontWeight="Bold">
+                        <TextBox.Resources>
+                            <Style TargetType="{x:Type Border}">
+                                <Setter Property="CornerRadius" Value="8 0 0 8"/>
+                            </Style>
+                        </TextBox.Resources>
+                    </TextBox>
+                    <Button Style="{StaticResource NewCrosswordButtonStyle}"
+                            BorderThickness="0 1 0 1">
+                        <Image Source="Images/green_tick.png" Height="25" />
+                    </Button>
+                    <Button Style="{StaticResource NewCrosswordButtonStyle}"
+                            BorderThickness="0 1 1 1"
+                            Command="{Binding CancelNewCrosswordCommand}">
+                        <Button.Resources>
+                            <Style TargetType="{x:Type Border}">
+                                <Setter Property="CornerRadius" Value="0 8 8 0"/>
+                            </Style>
+                        </Button.Resources>
+
+                        <Image Source="Images/red_x.png" Height="25" />
+                    </Button>
+                </StackPanel>
+
+            </Grid>
         </Grid>
     </Border>
 </Window>

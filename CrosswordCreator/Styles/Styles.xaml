@@ -14,6 +14,8 @@
         <Setter Property="FontSize" Value="25"/>
         <Setter Property="BorderBrush" Value="Black"/>
         <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Background" Value="LightGray"/>
+        <Setter Property="OverridesDefaultStyle" Value="True"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
@@ -27,14 +29,33 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-    </Style>
-
-    <Style x:Key="ButtonPressStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource ButtonStyle}">
-        <Setter Property="Background" Value="LightGray"/>
-        <Setter Property="OverridesDefaultStyle" Value="True"/>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Background" Value="DarkGray"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="FadingButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource ButtonStyle}">
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding ShowNewCrosswordInput}" Value="True">
+                <DataTrigger.EnterActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.2"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </DataTrigger.EnterActions>
+                <DataTrigger.ExitActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.3"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </DataTrigger.ExitActions>
+            </DataTrigger>
+            <Trigger Property="Opacity" Value="0">
+                <Setter Property="Visibility" Value="Collapsed"/>
             </Trigger>
         </Style.Triggers>
     </Style>
@@ -70,7 +91,6 @@
     </Style>
 
     <Style x:Key="ListBoxItemStyle" TargetType="{x:Type ListBoxItem}">
-        <!--<Setter Property="Height" Value="41"/>-->
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Template">
             <Setter.Value>
@@ -120,6 +140,74 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-    </Style>    
-    
+    </Style>
+
+    <Style x:Key="ExpandingStackPanel" TargetType="{x:Type StackPanel}">
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding ShowNewCrosswordInput}" Value="True">
+                <DataTrigger.EnterActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetProperty="Width" To="395" Duration="0:0:0.3"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </DataTrigger.EnterActions>
+                <DataTrigger.ExitActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetProperty="Width" To="0" Duration="0:0:0.1"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </DataTrigger.ExitActions>
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="NewCrosswordButtonStyle" TargetType="{x:Type Button}">
+        <Setter Property="Width" Value="40"/>
+        <Setter Property="Height" Value="40"/>
+        <Setter Property="BorderBrush" Value="Black"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Background" Value="LightGray"/>
+        <Setter Property="OverridesDefaultStyle" Value="True"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            Background="{TemplateBinding Background}">
+                        <ContentPresenter />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="DarkGray"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="InputTextBoxStyle" TargetType="{x:Type TextBox}">
+        <Setter Property="Foreground" Value="Black"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="FontSize" Value="20"/>
+        <Setter Property="CaretBrush" Value="Black"/>
+        <Setter Property="SelectionBrush" Value="#333333"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type TextBoxBase}">
+                    <Border BorderBrush="Black" 
+                            Background="LightGray"
+                            BorderThickness="1"
+                            CornerRadius="7 0 0 7">
+                        <ScrollViewer x:Name="PART_ContentHost" 
+                                      HorizontalScrollBarVisibility="Hidden"
+                                      VerticalScrollBarVisibility="Hidden"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
 </ResourceDictionary>

@@ -10,7 +10,9 @@
 
   <ItemGroup>
     <None Remove="Images\EditButton.png" />
+    <None Remove="Images\green_tick.png" />
     <None Remove="Images\LeftArrow.png" />
+    <None Remove="Images\red_x.png" />
     <None Remove="Images\RightArrow.png" />
   </ItemGroup>
 
@@ -18,7 +20,13 @@
     <Content Include="Images\EditButton.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Images\green_tick.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Images\LeftArrow.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\red_x.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Images\RightArrow.png">

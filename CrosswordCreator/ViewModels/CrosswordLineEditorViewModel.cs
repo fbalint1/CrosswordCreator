@@ -24,7 +24,7 @@ namespace CrosswordCreator.ViewModels
 
     [Obsolete("Only for design time default")]
     public CrosswordLineEditorViewModel()
-      : this("Egyenlőtlenség".ToUpper(), "Ez egy teszt clue", 10)
+      : this("Egyenlőtlenség".ToUpper(), "Ez egy teszt clue", 9)
     {
     }
 

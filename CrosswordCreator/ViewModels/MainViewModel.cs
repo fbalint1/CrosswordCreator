@@ -19,6 +19,7 @@ namespace CrosswordCreator.ViewModels
 
     private bool _isCurrentCrosswordModified = false;
     private bool _showNewCrosswordInput = false;
+    private string _newCrosswordText = string.Empty;
     private string _selectedPath;
     private volatile bool _isSaving = false;
     private volatile bool _isLoading = false;
@@ -46,9 +47,9 @@ namespace CrosswordCreator.ViewModels
       {
         if (string.IsNullOrEmpty(_selectedPath))
         {
-          // TODO: warning or just pop the thing up?
-          return;
+          ShowDirectorySelection();
         }
+
 
 
       });
@@ -60,13 +61,23 @@ namespace CrosswordCreator.ViewModels
           return;
         }
 
-        var dialog = new FolderBrowserDialog();
-
-        if (dialog.ShowDialog() == DialogResult.OK)
-        {
-          _selectedPath = dialog.SelectedPath;
-        }
+        ShowDirectorySelection();
       }, _ => !_isLoading && !_isSaving);
+
+      StartNewCrosswordCommand = new RelayCommand(_ =>
+      {
+        if (_isCurrentCrosswordModified && !ShouldProceedAfterPrompt())
+        {
+          return;
+        }
+
+        _showNewCrosswordInput = false;
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ShowNewCrosswordInput)));
+
+        // TODO: generate new rows
+
+        NewCrosswordText = string.Empty;
+      });
 
       CancelNewCrosswordCommand = new RelayCommand(_ =>
       {
@@ -99,7 +110,7 @@ namespace CrosswordCreator.ViewModels
     public ObservableCollection<CrosswordLineViewModel> Rows { get; set; }
 
     public int ControlWidthLeft { get; set; }
-    public int ControlWidthRight { get; set; }  
+    public int ControlWidthRight { get; set; }
 
     public ICommand NewCrosswordCommand { get; private set; }
     public ICommand SaveCrosswordCommand { get; private set; }
@@ -110,10 +121,20 @@ namespace CrosswordCreator.ViewModels
 
     public bool ShowNewCrosswordInput => _showNewCrosswordInput;
 
+    public string NewCrosswordText
+    {
+      get { return _newCrosswordText; }
+      set
+      {
+        _newCrosswordText = value.ToUpper();
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NewCrosswordText)));
+      }
+    }
+
     private void RecalculateGridMetrics()
     {
-      var widthLeft = 1;
-      var widthRight = 1;
+      var widthLeft = 4;
+      var widthRight = 4;
 
       foreach (var row in Rows)
       {
@@ -121,16 +142,26 @@ namespace CrosswordCreator.ViewModels
         widthLeft = lengthLeft > widthLeft ? lengthLeft : widthLeft;
 
         var lengthRight = row.Word.Length - row.SolutionCharacterNumber - 1;
-        widthRight = lengthRight > widthRight ? lengthRight : widthRight; 
+        widthRight = lengthRight > widthRight ? lengthRight : widthRight;
       }
 
       ControlWidthLeft = widthLeft;
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ControlWidthLeft)));
       ControlWidthRight = widthRight;
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ControlWidthRight))); 
+      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ControlWidthRight)));
     }
 
-    private void SavePreviousWorkingDirectory()
+    private void ShowDirectorySelection()
+    {
+      var dialog = new FolderBrowserDialog();
+
+      if (dialog.ShowDialog() == DialogResult.OK)
+      {
+        _selectedPath = dialog.SelectedPath;
+      }
+    }
+
+    private void SaveWorkingDirectory()
     {
       var appDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), TEMP_FOLDER);
 
@@ -139,7 +170,7 @@ namespace CrosswordCreator.ViewModels
         Directory.CreateDirectory(appDataFolder);
       }
 
-      File.WriteAllText($"{Path.Combine(appDataFolder, PREF_FILE_NAME)}", _selectedPath);
+      File.WriteAllText($"{Path.Combine(appDataFolder, PREF_FILE_NAME)}", _selectedPath); // TODO: last opened crossword
     }
 
     private void LoadPreviousWorkingDirectory()
@@ -155,14 +186,49 @@ namespace CrosswordCreator.ViewModels
       _selectedPath = File.ReadAllLines(preferencesFile)[0];
     }
 
-    public void Dispose()
+    private bool ShouldProceedAfterPrompt()
     {
-      SavePreviousWorkingDirectory();
+      var dialog = new UserInputWindow("Mentés?", "A jelenlegi keresztrejtvény nincs mentve. Elmentsük?", "Igen", "Nem");
+      dialog.ShowDialog();
 
-      if (_isCurrentCrosswordModified)
+      if (dialog.WasCancelled)
       {
+        // Clicked X, do nothing
+        return false;
+      }
+      else if (dialog.WasLeftClicked)
+      {
+        // Clicked yes, save
+        // TODO: save
+        return true;
+      }
+
+      // Clicked no, don't save
+      return true;
+    }
+
+    private void SaveCurrentCrossword()
+    {
+      _isSaving = true;
+
+      try
+      {
+        // TODO: persist
 
       }
+      catch (Exception ex)
+      {
+        // TODO: status update
+      }
+      finally
+      {
+        _isSaving = false;
+      }
+    }
+
+    public void Dispose()
+    {
+      SaveWorkingDirectory();
     }
   }
 }

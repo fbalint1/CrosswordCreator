@@ -1,0 +1,88 @@
+﻿<Window x:Class="CrosswordCreator.Views.UserInputWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CrosswordCreator.Views"
+        mc:Ignorable="d"
+        Title="Megerősítés"
+        Height="450" Width="800"
+        WindowStyle="None"
+        Background="Transparent"
+        AllowsTransparency="True"
+        WindowStartupLocation="CenterScreen"
+        SizeToContent="WidthAndHeight">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Styles/Styles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    
+    <Border CornerRadius="10"
+            Background="White"
+            BorderBrush="Black"
+            BorderThickness="1"
+            MinHeight="150"
+            MinWidth="300">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="60"/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                        Orientation="Horizontal">
+                <Label Content="{Binding WindowTitle}" 
+                       FontWeight="Bold"
+                       VerticalAlignment="Center"
+                       FontSize="15"/>
+            </StackPanel>
+
+            <StackPanel Grid.Row="0" Grid.Column="2"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right">
+                <Button Style="{StaticResource CloseButton}"
+                        Command="{Binding CloseCommand}"/>
+            </StackPanel>
+
+            <TextBlock Grid.Row="1"
+                       Text="{Binding WindowContent}"
+                       TextWrapping="Wrap"
+                       FontSize="20"
+                       Padding="10"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Center"/>
+
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" 
+                        Content="{Binding LeftOption}"
+                        Style="{StaticResource ButtonStyle}"
+                        Command="{Binding LeftCommand}">
+                    <Button.Resources>
+                        <Style TargetType="{x:Type Border}">
+                            <Setter Property="CornerRadius" Value="10"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+                <Button Grid.Column="1"
+                        Content="{Binding RightOption}"
+                        Style="{StaticResource ButtonStyle}"
+                        Command="{Binding RightCommand}">
+                    <Button.Resources>
+                        <Style TargetType="{x:Type Border}">
+                            <Setter Property="CornerRadius" Value="10"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+            </Grid>
+            
+        </Grid>
+    </Border>
+</Window>

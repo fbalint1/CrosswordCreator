@@ -25,11 +25,18 @@ namespace CrosswordCreator
       InitializeComponent();
     }
 
+    // TODO: drop xml on window to open
+    // TODO: editor window hovers 
+
     private void Button_Click(object sender, RoutedEventArgs e)
     {
-      ((IDisposable)DataContext)?.Dispose();
+      // TODO: call VM with event args
 
-      Close();
+      if (!e.Handled)
+      {
+        ((IDisposable)DataContext)?.Dispose();
+        Close();
+      }
     }
     private void Grid_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) => DragMove();
   }

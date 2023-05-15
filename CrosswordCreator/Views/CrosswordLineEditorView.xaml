@@ -36,12 +36,13 @@
                 <Setter Property="Background" Value="LightGray"/>
                 <Setter Property="VerticalContentAlignment" Value="Center"/>
                 <Setter Property="HorizontalContentAlignment" Value="Left"/>
-                <Setter Property="Margin" Value="0 5 5 5"/>
-                <Setter Property="BorderBrush" Value="Black"/>
+                <Setter Property="BorderThickness" Value="0"/>
                 <Setter Property="Height" Value="60"/>
                 <Setter Property="HorizontalAlignment" Value="Stretch"/>
                 <Setter Property="VerticalAlignment" Value="Stretch"/>
                 <Setter Property="FontSize" Value="30"/>
+                <Setter Property="Padding" Value="0 10 0 0"/>
+                <Setter Property="SelectionBrush" Value="#333333"/>
             </Style>
 
             <Style x:Key="LabelStyle" TargetType="{x:Type Label}">
@@ -60,12 +61,10 @@
             </Style>
             
             <Storyboard x:Key="ShrinkSize">
-                <DoubleAnimation Storyboard.TargetProperty="Height"
-                                                     From="50" To="0" Duration="0:0:0:0.3"/>
+                <DoubleAnimation Storyboard.TargetProperty="Height" To="0" Duration="0:0:0:0.3"/>
             </Storyboard>
             <Storyboard x:Key="ExpandSize">
-                <DoubleAnimation Storyboard.TargetProperty="Height"
-                                                     From="0" To="50" Duration="0:0:0:0.3"/>
+                <DoubleAnimation Storyboard.TargetProperty="Height" To="50" Duration="0:0:0:0.3"/>
             </Storyboard>
 
             <Style x:Key="DisappearAnimation" TargetType="Grid">
@@ -73,17 +72,11 @@
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding ShowCharacterChoice}" Value="True">
                         <DataTrigger.EnterActions>
-                            <RemoveStoryboard BeginStoryboardName="ShrinkSize"/>
-                            <BeginStoryboard Storyboard="{StaticResource ExpandSize}"
-                                             x:Name="ExpandSize"/>
+                            <BeginStoryboard Storyboard="{StaticResource ExpandSize}"/>
                         </DataTrigger.EnterActions>
-                    </DataTrigger>
-                    <DataTrigger Binding="{Binding ShowCharacterChoice}" Value="False">
-                        <DataTrigger.EnterActions>
-                            <RemoveStoryboard BeginStoryboardName="ExpandSize"/>
-                            <BeginStoryboard Storyboard="{StaticResource ShrinkSize}"
-                                             x:Name="ShrinkSize"/>
-                        </DataTrigger.EnterActions>
+                        <DataTrigger.ExitActions>
+                            <BeginStoryboard Storyboard="{StaticResource ShrinkSize}"/>
+                        </DataTrigger.ExitActions>
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
@@ -146,20 +139,24 @@
                    Content="Szó:"
                    Style="{StaticResource LabelStyle}"/>
 
-            <RichTextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2"
-                         x:Name="WordTextBox"
-                         Style="{StaticResource RichTextBoxStyle}"
-                         AcceptsReturn="False"
-                         AcceptsTab="False"
-                         IsUndoEnabled="False"
-                         MaxWidth="400"
-                         Padding="0 8 0 0">
-                <RichTextBox.Resources>
-                    <Style TargetType="{x:Type Border}">
-                        <Setter Property="CornerRadius" Value="10"/>
-                    </Style>
-                </RichTextBox.Resources>
-            </RichTextBox>
+            <Border Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2"
+                    BorderBrush="Black"
+                    BorderThickness="1"
+                    CornerRadius="10"
+                    Margin="0 5 5 5">
+                <RichTextBox x:Name="WordTextBox"
+                             Style="{StaticResource RichTextBoxStyle}"
+                             AcceptsReturn="False"
+                             AcceptsTab="False"
+                             IsUndoEnabled="False"
+                             MaxWidth="400">
+                    <RichTextBox.Resources>
+                        <Style TargetType="{x:Type Border}">
+                            <Setter Property="CornerRadius" Value="10"/>
+                        </Style>
+                    </RichTextBox.Resources>
+                </RichTextBox>
+            </Border>
 
             <Grid Grid.Row="3" Grid.ColumnSpan="3"
                   Style="{StaticResource DisappearAnimation}"
