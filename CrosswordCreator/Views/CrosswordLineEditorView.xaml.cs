@@ -25,6 +25,7 @@ namespace CrosswordCreator.Views
       DataContext = crosswordLineEditorViewModel_;
       _viewModel = crosswordLineEditorViewModel_;
       _viewModel.DataChangedInViewModel += ViewModel_DataChangedInViewModel;
+      _viewModel.ResetRequested += ResetRequestedFromViewModel;
 
       WordTextBox.Document.Blocks.Clear();
 
@@ -37,6 +38,19 @@ namespace CrosswordCreator.Views
 
     private void ViewModel_DataChangedInViewModel()
     {
+      HighlightCharacter(WordTextBox);
+    }
+
+    private void ResetRequestedFromViewModel()
+    {
+      WordTextBox.TextChanged -= WordTextBox_TextChanged;
+
+      WordTextBox.Document.Blocks.Clear();
+
+      WordTextBox.TextChanged += WordTextBox_TextChanged;
+
+      WordTextBox.Document.Blocks.Add(new Paragraph(new Run(_viewModel.LineWord)));
+
       HighlightCharacter(WordTextBox);
     }
 
@@ -65,6 +79,7 @@ namespace CrosswordCreator.Views
       if (!newText.Equals(_viewModel.LineWord))
       {
         _viewModel.LineWord = newText;
+
         HighlightCharacter(richTextBox);
       }
     }

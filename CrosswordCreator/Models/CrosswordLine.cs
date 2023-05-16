@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CrosswordCreator.Models
 {
+  [Serializable]
   public class CrosswordLine
   {
     public string LineWord { get; set; }

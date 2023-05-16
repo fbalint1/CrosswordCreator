@@ -12,7 +12,7 @@
         AllowsTransparency="True"
         WindowStartupLocation="CenterScreen"
         SizeToContent="WidthAndHeight"
-        >
+        d:DataContext="{d:DesignInstance vms:CrosswordLineEditorViewModel}">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -61,10 +61,10 @@
             </Style>
             
             <Storyboard x:Key="ShrinkSize">
-                <DoubleAnimation Storyboard.TargetProperty="Height" To="0" Duration="0:0:0:0.3"/>
+                <DoubleAnimation Storyboard.TargetProperty="Height" From="50" To="0" Duration="0:0:0:0.3"/>
             </Storyboard>
             <Storyboard x:Key="ExpandSize">
-                <DoubleAnimation Storyboard.TargetProperty="Height" To="50" Duration="0:0:0:0.3"/>
+                <DoubleAnimation Storyboard.TargetProperty="Height" From="0" To="50" Duration="0:0:0:0.3"/>
             </Storyboard>
 
             <Style x:Key="DisappearAnimation" TargetType="Grid">
@@ -82,10 +82,6 @@
             </Style>
         </ResourceDictionary>
     </Window.Resources>
-
-    <Window.DataContext>
-        <vms:CrosswordLineEditorViewModel />
-    </Window.DataContext>
 
     <Border Background="White"
             CornerRadius="10"

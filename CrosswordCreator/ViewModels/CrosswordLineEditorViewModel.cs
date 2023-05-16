@@ -45,7 +45,7 @@ namespace CrosswordCreator.ViewModels
         _characterPlaceInWord = _startingCharacterPosition;
         LineWord = _startingWord;
         Clue = _startingClue;
-        DataChangedInViewModel?.Invoke();
+        ResetRequested?.Invoke();
       });
       SaveCommand = new RelayCommand(w =>
       {
@@ -103,6 +103,7 @@ namespace CrosswordCreator.ViewModels
 
     public event PropertyChangedEventHandler? PropertyChanged;
     public event DataChangedInViewModelHandler? DataChangedInViewModel;
+    public event DataChangedInViewModelHandler? ResetRequested;
 
     public ICommand ResetCommand { get; private set; }
     public ICommand SaveCommand { get; private set; }

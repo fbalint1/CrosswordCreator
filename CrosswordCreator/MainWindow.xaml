@@ -99,7 +99,8 @@
                 <Button Grid.Column="0" Content="Új"
                         Width="70"
                         Style="{StaticResource ButtonStyle}"
-                        Command="{Binding NewCrosswordCommand}"/>
+                        Command="{Binding NewCrosswordCommand}"
+                        FocusManager.FocusedElement="{Binding ElementName=NewCrosswordTextBox}"/>
                 <Button Grid.Column="1" Content="Mentés"
                         Width="95"
                         Style="{StaticResource FadingButtonStyle}"
@@ -115,7 +116,7 @@
                             Orientation="Horizontal"
                             HorizontalAlignment="Left"
                             Margin="5">
-                    <TextBox Text="{Binding NewCrosswordText, UpdateSourceTrigger=PropertyChanged}"
+                    <TextBox x:Name="NewCrosswordTextBox" Text="{Binding NewCrosswordText, UpdateSourceTrigger=PropertyChanged}"
                              Style="{StaticResource InputTextBoxStyle}" 
                              Width="315" Height="40"
                              FontWeight="Bold">
@@ -124,9 +125,13 @@
                                 <Setter Property="CornerRadius" Value="8 0 0 8"/>
                             </Style>
                         </TextBox.Resources>
+                        <TextBox.InputBindings>
+                            <KeyBinding Command="{Binding StartNewCrosswordCommand}" Key="Return"/>
+                        </TextBox.InputBindings>
                     </TextBox>
                     <Button Style="{StaticResource NewCrosswordButtonStyle}"
-                            BorderThickness="0 1 0 1">
+                            BorderThickness="0 1 0 1"
+                            Command="{Binding StartNewCrosswordCommand}">
                         <Image Source="Images/green_tick.png" Height="25" />
                     </Button>
                     <Button Style="{StaticResource NewCrosswordButtonStyle}"

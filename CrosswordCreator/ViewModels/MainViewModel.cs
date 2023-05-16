@@ -5,6 +5,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using System.Windows.Input;
 
@@ -17,6 +18,7 @@ namespace CrosswordCreator.ViewModels
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
+    private Crossword _currentCrossword;
     private bool _isCurrentCrosswordModified = false;
     private bool _showNewCrosswordInput = false;
     private string _newCrosswordText = string.Empty;
@@ -26,16 +28,24 @@ namespace CrosswordCreator.ViewModels
 
     public MainViewModel()
     {
+      Rows = new ObservableCollection<CrosswordLineViewModel>();
+
       LoadPreviousWorkingDirectory();
 
-      Rows = new ObservableCollection<CrosswordLineViewModel>
+#if DEBUG
+      var testCrossword = new Crossword()
       {
-        new CrosswordLineViewModel(new CrosswordLine() { LineWord = "VALAMI", SolutionCharacterNumberInLineWord = 2, Clue = "Ez egy clue", PlaceInCrossword = 1 }),
-        new CrosswordLineViewModel(new CrosswordLine() { LineWord = "EGYENLŐTLENSÉG", SolutionCharacterNumberInLineWord = 9, Clue = "Ez egy clue", PlaceInCrossword = 2 }),
-        new CrosswordLineViewModel(new CrosswordLine() { LineWord = "KANÁL", SolutionCharacterNumberInLineWord = 2, Clue = "Ez egy clue", PlaceInCrossword = 3, IsLastInCrossword = true })
+        Goal = "LEN",
+        Lines = new CrosswordLine[]
+        {
+          new CrosswordLine() { LineWord = "VALAMI", SolutionCharacterNumberInLineWord = 2, Clue = "Ez egy clue", PlaceInCrossword = 1 },
+          new CrosswordLine() { LineWord = "EGYENLŐTLENSÉG", SolutionCharacterNumberInLineWord = 9, Clue = "Ez egy clue", PlaceInCrossword = 2 },
+          new CrosswordLine() { LineWord = "KANÁL", SolutionCharacterNumberInLineWord = 2, Clue = "Ez egy clue", PlaceInCrossword = 3, IsLastInCrossword = true }
+        }
       };
 
-      RecalculateGridMetrics();
+      PopulateDataFromCrossword(testCrossword);
+#endif
 
       NewCrosswordCommand = new RelayCommand(_ =>
       {
@@ -50,8 +60,7 @@ namespace CrosswordCreator.ViewModels
           ShowDirectorySelection();
         }
 
-
-
+        SaveCurrentCrossword();
       });
 
       SelectWorkingFolderCommand = new RelayCommand(_ =>
@@ -74,7 +83,7 @@ namespace CrosswordCreator.ViewModels
         _showNewCrosswordInput = false;
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ShowNewCrosswordInput)));
 
-        // TODO: generate new rows
+        PopulateDataFromCrossword(new Crossword(_newCrosswordText));
 
         NewCrosswordText = string.Empty;
       });
@@ -129,6 +138,37 @@ namespace CrosswordCreator.ViewModels
         _newCrosswordText = value.ToUpper();
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NewCrosswordText)));
       }
+    }
+
+    private void PopulateDataFromCrossword(Crossword crossword_)
+    {
+      Rows.Clear();
+
+      _currentCrossword = crossword_;
+
+      if (crossword_.Lines.Length == 0)
+      {
+        for (int i = 0; i < crossword_.Goal.Length; i++)
+        {
+          Rows.Add(new CrosswordLineViewModel(new CrosswordLine()
+          {
+            LineWord = crossword_.Goal[i].ToString(),
+            SolutionCharacterNumberInLineWord = 0,
+            Clue = string.Empty,
+            PlaceInCrossword = i + 1,
+            IsLastInCrossword = i == crossword_.Goal.Length - 1,
+          }));
+        }
+      }
+      else
+      {
+        foreach (var line in crossword_.Lines)
+        {
+          Rows.Add(new CrosswordLineViewModel(line));
+        }
+      }
+
+      RecalculateGridMetrics();
     }
 
     private void RecalculateGridMetrics()
@@ -198,8 +238,7 @@ namespace CrosswordCreator.ViewModels
       }
       else if (dialog.WasLeftClicked)
       {
-        // Clicked yes, save
-        // TODO: save
+        SaveCurrentCrossword();
         return true;
       }
 
@@ -213,8 +252,7 @@ namespace CrosswordCreator.ViewModels
 
       try
       {
-        // TODO: persist
-
+        CrosswordSerializer.PersistCrossword(_currentCrossword, _selectedPath);
       }
       catch (Exception ex)
       {
