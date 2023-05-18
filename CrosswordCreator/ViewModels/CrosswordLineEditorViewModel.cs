@@ -19,6 +19,7 @@ namespace CrosswordCreator.ViewModels
     private string _clue;
     private int _characterPlaceInWord;
     private bool _charChoiceVisibe;
+    private bool _characterChoiceFirstVisibility;
     private bool _changed = false;
     private bool _wasSaved = false;
 
@@ -38,6 +39,7 @@ namespace CrosswordCreator.ViewModels
       _clue = clue_;
       _characterPlaceInWord = characterPlaceInWord_;
       _charChoiceVisibe = word_.Count(c => c == _requiredCharacter) > 1;
+      _characterChoiceFirstVisibility = _charChoiceVisibe;
 
       ResetCommand = new RelayCommand(_ =>
       {
@@ -112,9 +114,20 @@ namespace CrosswordCreator.ViewModels
 
     public char Character => _requiredCharacter;
 
-    public bool ShowCharacterChoice => _lineWord.Count(c => c == _requiredCharacter) > 1;
+    public bool CharacterChoiceFirstVisibility => _characterChoiceFirstVisibility;
 
-    public bool CharacterChoiceFirstVisibility => _charChoiceVisibe;
+    public bool CharacterChoiceVisible
+    {
+      get { return _charChoiceVisibe; }
+      set
+      {
+        if (_charChoiceVisibe != value)
+        {
+          _charChoiceVisibe = value;
+          PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CharacterChoiceVisible)));
+        }
+      }
+    }
 
     public string LineWord
     {
@@ -128,10 +141,12 @@ namespace CrosswordCreator.ViewModels
         }
 
         _lineWord = upperValue;
+        _changed = _changed || !_lineWord.Equals(_startingWord);
 
-        if (!_charChoiceVisibe)
+        CharacterChoiceVisible = _lineWord.Count(c => _requiredCharacter == c) > 1;
+        if (!_characterChoiceFirstVisibility && _charChoiceVisibe)
         {
-          _charChoiceVisibe = true;
+          _characterChoiceFirstVisibility = true;
           PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CharacterChoiceFirstVisibility)));
         }
 
@@ -166,7 +181,6 @@ namespace CrosswordCreator.ViewModels
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsValid)));
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsChanged)));
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SaveButtonTooltip)));
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ShowCharacterChoice)));
       }
     }
 

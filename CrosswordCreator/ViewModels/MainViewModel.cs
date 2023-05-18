@@ -210,7 +210,7 @@ namespace CrosswordCreator.ViewModels
         Directory.CreateDirectory(appDataFolder);
       }
 
-      File.WriteAllText($"{Path.Combine(appDataFolder, PREF_FILE_NAME)}", _selectedPath); // TODO: last opened crossword
+      File.WriteAllLines($"{Path.Combine(appDataFolder, PREF_FILE_NAME)}", new[] { _selectedPath, _currentCrossword.Goal }); // TODO: last opened crossword
     }
 
     private void LoadPreviousWorkingDirectory()
@@ -223,7 +223,22 @@ namespace CrosswordCreator.ViewModels
         return;
       }
 
-      _selectedPath = File.ReadAllLines(preferencesFile)[0];
+      var preferencesLines = File.ReadAllLines(preferencesFile);
+
+      if (preferencesLines.Length > 0)
+      {
+        _selectedPath = preferencesLines[0];
+      }
+
+      if (preferencesLines.Length > 1 && preferencesLines[1] != string.Empty)
+      {
+        var fileName = Path.Combine(_selectedPath, preferencesFile[1] + ".xml");
+
+        if (File.Exists(fileName))
+        {
+          PopulateDataFromCrossword(CrosswordSerializer.GetCrossword(fileName));
+        }
+      }
     }
 
     private bool ShouldProceedAfterPrompt()

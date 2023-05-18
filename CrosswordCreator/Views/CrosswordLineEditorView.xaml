@@ -70,7 +70,7 @@
             <Style x:Key="DisappearAnimation" TargetType="Grid">
                 <Setter Property="Height" Value="0"/>
                 <Style.Triggers>
-                    <DataTrigger Binding="{Binding ShowCharacterChoice}" Value="True">
+                    <DataTrigger Binding="{Binding CharacterChoiceVisible}" Value="True">
                         <DataTrigger.EnterActions>
                             <BeginStoryboard Storyboard="{StaticResource ExpandSize}"/>
                         </DataTrigger.EnterActions>

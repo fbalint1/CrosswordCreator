@@ -68,7 +68,8 @@
                             <views:CrosswordLineView Grid.Column="0" 
                                                      CellsLeftFromMiddle="{Binding Data.ControlWidthLeft, Source={StaticResource BindingProxy}}"
                                                      CellsRightFromMiddle="{Binding Data.ControlWidthRight, Source={StaticResource BindingProxy}}"
-                                                     Word="{Binding Word}"/>
+                                                     Word="{Binding Word}"
+                                                     SolutionCharacterNumber="{Binding SolutionCharacterNumber}"/>
                             <StackPanel Grid.Column="1" Orientation="Horizontal">
                                 <TextBlock Margin="10 0 0 0" Text="{Binding PlaceInCrossword, StringFormat={}{0}.}"
                                        VerticalAlignment="Center"
@@ -89,7 +90,7 @@
                 </ListView.ItemTemplate>
             </ListView>
 
-            <Grid Grid.Row="2" Grid.ColumnSpan="2">
+            <Grid Grid.Row="2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>

@@ -12,6 +12,7 @@ namespace CrosswordCreator.Views
     private int _currentLeft = 0;
     private int _currentRight = 0;
     private string _currentWord = "";
+    private int _currentSolutionCharacter = 0;
 
     private CrosswordLineViewModel _viewModel;
 
@@ -50,6 +51,16 @@ namespace CrosswordCreator.Views
     public static readonly DependencyProperty WordProperty =
         DependencyProperty.Register("Word", typeof(string), typeof(CrosswordLineView), new PropertyMetadata(DependencyPropertyChanged));
 
+    public int SolutionCharacterNumber
+    {
+      get { return (int)GetValue(SolutionCharacterNumberProperty); }
+      set { SetValue(SolutionCharacterNumberProperty, value); }
+    }
+
+    // Using a DependencyProperty as the backing store for SolutionCharacterNumber.  This enables animation, styling, binding, etc...
+    public static readonly DependencyProperty SolutionCharacterNumberProperty =
+        DependencyProperty.Register("SolutionCharacterNumber", typeof(int), typeof(CrosswordLineView), new PropertyMetadata(DependencyPropertyChanged));
+
     private static void DependencyPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
       if (d is CrosswordLineView lineView)
@@ -72,7 +83,8 @@ namespace CrosswordCreator.Views
 
       if (CellsLeftFromMiddle != _currentLeft
         || CellsRightFromMiddle != _currentRight
-        || Word != _currentWord)
+        || Word != _currentWord
+        || SolutionCharacterNumber != _currentSolutionCharacter)
       {
         if (_viewModel.SolutionCharacterNumber > CellsLeftFromMiddle
           || _viewModel.Word.Length - _viewModel.SolutionCharacterNumber - 1 > CellsRightFromMiddle)
