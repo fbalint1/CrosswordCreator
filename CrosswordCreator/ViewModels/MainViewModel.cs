@@ -1,13 +1,15 @@
 ﻿using CrosswordCreator.Models;
+using CrosswordCreator.Models.Enums;
 using CrosswordCreator.Utilities;
 using CrosswordCreator.Views;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Input;
+using Timer = System.Windows.Forms.Timer;
 
 namespace CrosswordCreator.ViewModels
 {
@@ -18,6 +20,9 @@ namespace CrosswordCreator.ViewModels
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
+    private readonly UISynchronizationContext _uISynchronizationContext;
+    private readonly Timer _statusClearTimer;
+
     private Crossword _currentCrossword;
     private bool _isCurrentCrosswordModified = false;
     private bool _showNewCrosswordInput = false;
@@ -25,9 +30,18 @@ namespace CrosswordCreator.ViewModels
     private string _selectedPath;
     private volatile bool _isSaving = false;
     private volatile bool _isLoading = false;
+    private volatile StatusEnum _statusEnum = StatusEnum.None;
+
 
     public MainViewModel()
     {
+      _uISynchronizationContext = UISynchronizationContext.Instance;
+      _statusClearTimer = new Timer()
+      {
+        Interval = 5000,
+      };
+      _statusClearTimer.Tick += ClearStatusProperty;
+
       Rows = new ObservableCollection<CrosswordLineViewModel>();
 
       LoadPreviousWorkingDirectory();
@@ -60,7 +74,7 @@ namespace CrosswordCreator.ViewModels
           ShowDirectorySelection();
         }
 
-        SaveCurrentCrossword();
+        Task.Run(SaveCurrentCrossword);
       });
 
       SelectWorkingFolderCommand = new RelayCommand(_ =>
@@ -73,19 +87,69 @@ namespace CrosswordCreator.ViewModels
         ShowDirectorySelection();
       }, _ => !_isLoading && !_isSaving);
 
+      OpenCrosswordCommmand = new RelayCommand(_ =>
+      {
+        var dialog = new OpenFileDialog();
+        dialog.Filter = "CSV files (*.xml)|*.xml";
+        if (!string.IsNullOrEmpty(_selectedPath))
+        {
+          dialog.InitialDirectory = _selectedPath ;
+        }
+        var result = dialog.ShowDialog();
+        if (dialog.FileName != null && result == DialogResult.OK)
+        {
+          try
+          {
+            SetCurrentCrossword(CrosswordSerializer.GetCrossword(dialog.FileName));
+          }
+          catch (Exception)
+          {
+            StatusEnum = StatusEnum.LoadFailed;
+          }
+        }
+      });
+
       StartNewCrosswordCommand = new RelayCommand(_ =>
       {
-        if (_isCurrentCrosswordModified && !ShouldProceedAfterPrompt())
+        if (_isCurrentCrosswordModified)
         {
-          return;
+          var promptResult = PromptUserForSave();
+
+          switch (promptResult)
+          {
+            case PromptResultEnum.Cancel:
+              return;
+            case PromptResultEnum.Continue:
+              Task.Run(SaveCurrentCrossword)
+                .ContinueWith(t =>
+                {
+                  StatusEnum = StatusEnum.Loading;
+
+                  _uISynchronizationContext.Run(() =>
+                  {
+                    PopulateDataFromCrossword(new Crossword(_newCrosswordText));
+
+                    _showNewCrosswordInput = false;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ShowNewCrosswordInput)));
+
+                    NewCrosswordText = string.Empty;
+                  });
+                });
+              break;
+            case PromptResultEnum.Skip:
+              StatusEnum = StatusEnum.Loading;
+
+              PopulateDataFromCrossword(new Crossword(_newCrosswordText));
+
+              _showNewCrosswordInput = false;
+              PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ShowNewCrosswordInput)));
+
+              NewCrosswordText = string.Empty;
+              break;
+            default:
+              throw new InvalidOperationException("Unmapped enum state");
+          }
         }
-
-        _showNewCrosswordInput = false;
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ShowNewCrosswordInput)));
-
-        PopulateDataFromCrossword(new Crossword(_newCrosswordText));
-
-        NewCrosswordText = string.Empty;
       });
 
       CancelNewCrosswordCommand = new RelayCommand(_ =>
@@ -124,11 +188,34 @@ namespace CrosswordCreator.ViewModels
     public ICommand NewCrosswordCommand { get; private set; }
     public ICommand SaveCrosswordCommand { get; private set; }
     public ICommand SelectWorkingFolderCommand { get; private set; }
+    public ICommand OpenCrosswordCommmand { get; private set; }
     public ICommand CancelNewCrosswordCommand { get; private set; }
     public ICommand StartNewCrosswordCommand { get; private set; }
     public ICommand EditCommand { get; private set; }
 
     public bool ShowNewCrosswordInput => _showNewCrosswordInput;
+
+    public StatusEnum StatusEnum
+    {
+      get { return _statusEnum; }
+      set
+      {
+        if (_statusEnum != value)
+        {
+          _statusEnum = value;
+          PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(StatusEnum)));
+
+          if (_statusEnum != StatusEnum.None)
+          {
+            _uISynchronizationContext.Run(() =>
+            {
+              _statusClearTimer.Stop();
+              _statusClearTimer.Start();
+            });
+          }
+        }
+      }
+    }
 
     public string NewCrosswordText
     {
@@ -169,6 +256,8 @@ namespace CrosswordCreator.ViewModels
       }
 
       RecalculateGridMetrics();
+
+      StatusEnum = StatusEnum.LoadComplete;
     }
 
     private void RecalculateGridMetrics()
@@ -210,7 +299,7 @@ namespace CrosswordCreator.ViewModels
         Directory.CreateDirectory(appDataFolder);
       }
 
-      File.WriteAllLines($"{Path.Combine(appDataFolder, PREF_FILE_NAME)}", new[] { _selectedPath, _currentCrossword.Goal }); // TODO: last opened crossword
+      File.WriteAllLines($"{Path.Combine(appDataFolder, PREF_FILE_NAME)}", new[] { _selectedPath, _currentCrossword.Goal });
     }
 
     private void LoadPreviousWorkingDirectory()
@@ -241,37 +330,19 @@ namespace CrosswordCreator.ViewModels
       }
     }
 
-    private bool ShouldProceedAfterPrompt()
-    {
-      var dialog = new UserInputWindow("Mentés?", "A jelenlegi keresztrejtvény nincs mentve. Elmentsük?", "Igen", "Nem");
-      dialog.ShowDialog();
-
-      if (dialog.WasCancelled)
-      {
-        // Clicked X, do nothing
-        return false;
-      }
-      else if (dialog.WasLeftClicked)
-      {
-        SaveCurrentCrossword();
-        return true;
-      }
-
-      // Clicked no, don't save
-      return true;
-    }
-
-    private void SaveCurrentCrossword()
+    public void SaveCurrentCrossword()
     {
       _isSaving = true;
+      StatusEnum = StatusEnum.Saving;
 
       try
       {
         CrosswordSerializer.PersistCrossword(_currentCrossword, _selectedPath);
+        StatusEnum = StatusEnum.SaveComplete;
       }
-      catch (Exception ex)
+      catch (Exception)
       {
-        // TODO: status update
+        StatusEnum = StatusEnum.SaveFailed;
       }
       finally
       {
@@ -279,9 +350,69 @@ namespace CrosswordCreator.ViewModels
       }
     }
 
+    public PromptResultEnum PromptUserForSave()
+    {
+      if (!_isCurrentCrosswordModified)
+      {
+        return PromptResultEnum.Skip;
+      }
+
+      var dialog = new UserInputWindow("Mentés?", "A jelenlegi keresztrejtvény nincs mentve. Elmentsük?", "Igen", "Nem");
+      dialog.ShowDialog();
+
+      if (dialog.WasCancelled)
+      {
+        // Clicked X, cancel
+        return PromptResultEnum.Cancel;
+      }
+      else if (dialog.WasLeftClicked)
+      {
+        return PromptResultEnum.Continue;
+      }
+
+      // Clicked no, don't save
+      return PromptResultEnum.Skip;
+    }
+
+    private void ClearStatusProperty(object? _, EventArgs __)
+    {
+      StatusEnum = StatusEnum.None;
+
+      _statusClearTimer.Stop();
+    }
+
+    public void SetCurrentCrossword(Crossword crossword_)
+    {
+      var promptResult = PromptUserForSave();
+
+      switch (promptResult)
+      {
+        case PromptResultEnum.Cancel:
+          break;
+        case PromptResultEnum.Continue:
+          Task.Run(SaveCurrentCrossword)
+            .ContinueWith(t =>
+            {
+              StatusEnum = StatusEnum.Loading;
+
+              _uISynchronizationContext.Run(() => PopulateDataFromCrossword(crossword_));
+            });
+          break;
+        case PromptResultEnum.Skip:
+          StatusEnum = StatusEnum.Loading;
+
+          PopulateDataFromCrossword(crossword_);
+          break;
+        default:
+          throw new InvalidOperationException("Unmapped enum state");
+      }
+    }
+
     public void Dispose()
     {
       SaveWorkingDirectory();
+
+      _statusClearTimer?.Dispose();
     }
   }
 }

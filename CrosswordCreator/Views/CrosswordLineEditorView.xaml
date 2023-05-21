@@ -19,7 +19,7 @@
                 <ResourceDictionary Source="../Styles/Styles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
 
-            <Style x:Key="TextBoxStyle" TargetType="{x:Type TextBox}">
+            <Style x:Key="TextBoxStyle" TargetType="{x:Type TextBox}" BasedOn="{StaticResource InputTextBoxStyle}">
                 <Setter Property="FontWeight" Value="Bold"/>
                 <Setter Property="Background" Value="LightGray"/>
                 <Setter Property="VerticalContentAlignment" Value="Center"/>
@@ -29,6 +29,20 @@
                 <Setter Property="Height" Value="60"/>
                 <Setter Property="HorizontalAlignment" Value="Stretch"/>
                 <Setter Property="FontSize" Value="30"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type TextBoxBase}">
+                            <Border BorderBrush="Black" 
+                            Background="LightGray"
+                            BorderThickness="1"
+                            CornerRadius="10">
+                                <ScrollViewer x:Name="PART_ContentHost" 
+                                      HorizontalScrollBarVisibility="Hidden"
+                                      VerticalScrollBarVisibility="Hidden"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
             </Style>
             
             <Style x:Key="RichTextBoxStyle" TargetType="{x:Type RichTextBox}">
@@ -51,13 +65,81 @@
                 <Setter Property="FontSize" Value="30"/>
             </Style>
 
-            <Style x:Key="ButtonStyle" TargetType="{x:Type Button}">
+            <Style x:Key="ArrowButtonStyle" TargetType="{x:Type Button}">
                 <Setter Property="Margin" Value="4"/>
                 <Setter Property="BorderBrush" Value="Black"/>
                 <Setter Property="FontSize" Value="11"/>
                 <Setter Property="FontWeight" Value="Bold"/>
                 <Setter Property="Height" Value="60"/>
                 <Setter Property="FontSize" Value="30"/>
+                <Setter Property="BorderBrush" Value="Black"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="Background" Value="LightGray"/>
+                <Setter Property="OverridesDefaultStyle" Value="True"/>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="DarkGray"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <Style x:Key="LeftArrowButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource ArrowButtonStyle}">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border CornerRadius="7 0 0 7"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            Background="{TemplateBinding Background}">
+                                <ContentPresenter Margin="{TemplateBinding Padding}"
+                                          HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            
+            <Style x:Key="RightArrowButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource ArrowButtonStyle}">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border CornerRadius="0 7 7 0"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            Background="{TemplateBinding Background}">
+                                <ContentPresenter Margin="{TemplateBinding Padding}"
+                                          HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            
+            <Style x:Key="EditorButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource ButtonStyle}">
+                <Setter Property="Margin" Value="4"/>
+                <Setter Property="BorderBrush" Value="Black"/>
+                <Setter Property="FontSize" Value="11"/>
+                <Setter Property="FontWeight" Value="Bold"/>
+                <Setter Property="Height" Value="60"/>
+                <Setter Property="FontSize" Value="30"/>
+                <Style.Triggers>
+                    <Trigger Property="IsEnabled" Value="False">
+                        <Trigger.EnterActions>
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetProperty="Opacity" To="0.5" Duration="0:0:0.1"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </Trigger.EnterActions>
+                        <Trigger.ExitActions>
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.1"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </Trigger.ExitActions>
+                    </Trigger>
+                </Style.Triggers>
             </Style>
             
             <Storyboard x:Key="ShrinkSize">
@@ -120,7 +202,7 @@
             <StackPanel Grid.Row="1" Grid.ColumnSpan="3"
                         Orientation="Horizontal">
                 <Label Grid.Row="1" Grid.ColumnSpan="2"
-                       Content="Megoldás betűje sorban:"
+                       Content="Megoldás betűje a sorban:"
                        Style="{StaticResource LabelStyle}"
                        HorizontalAlignment="Left"/>
 
@@ -173,31 +255,21 @@
                         <ColumnDefinition />
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
-                    <Button Style="{StaticResource ButtonStyle}"
+                    <Button Style="{StaticResource LeftArrowButtonStyle}"
                             Command="{Binding SelectCharacterCommand}"
                             CommandParameter="False"
                             Height="40"
                             HorizontalAlignment="Stretch"
                             Margin="0 4 0 4">
-                        <Button.Resources>
-                            <Style TargetType="{x:Type Border}">
-                                <Setter Property="CornerRadius" Value="7 0 0 7"/>
-                            </Style>
-                        </Button.Resources>
                         <Image Source="../Images/LeftArrow.png" Margin="0 0 0 1.5"/>
                     </Button>
                     <Button Grid.Column="1" 
-                            Style="{StaticResource ButtonStyle}"
+                            Style="{StaticResource RightArrowButtonStyle}"
                             Command="{Binding SelectCharacterCommand}"
                             CommandParameter="True"
                             Height="40"
                             HorizontalAlignment="Stretch"
                             Margin="0 4 4 4">
-                        <Button.Resources>
-                            <Style TargetType="{x:Type Border}">
-                                <Setter Property="CornerRadius" Value="0 7 7 0"/>
-                            </Style>
-                        </Button.Resources>
                         <Image Source="../Images/RightArrow.png" Margin="0 1.5 0 0"/>
                     </Button>
                 </Grid>
@@ -212,11 +284,6 @@
             <TextBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2"
                      Text="{Binding Clue, UpdateSourceTrigger=PropertyChanged}"
                      Style="{StaticResource TextBoxStyle}">
-                <TextBox.Resources>
-                    <Style TargetType="{x:Type Border}">
-                        <Setter Property="CornerRadius" Value="10"/>
-                    </Style>
-                </TextBox.Resources>
             </TextBox>
 
             <Grid Grid.Row="5" Grid.ColumnSpan="3">
@@ -227,7 +294,7 @@
                 </Grid.ColumnDefinitions>
                 <Button Grid.Column="0" 
                         Content="Újra"
-                        Style="{StaticResource ButtonStyle}"
+                        Style="{StaticResource EditorButtonStyle}"
                         Command="{Binding ResetCommand}">
                     <Button.Resources>
                         <Style TargetType="{x:Type Border}">
@@ -237,7 +304,7 @@
                 </Button>
                 <Button Grid.Column="1"
                         Content="Mentés"
-                        Style="{StaticResource ButtonStyle}"
+                        Style="{StaticResource EditorButtonStyle}"
                         Command="{Binding SaveCommand}"
                         CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"
                         ToolTip="{Binding SaveButtonTooltip}"
@@ -254,7 +321,7 @@
                 </Button>
                 <Button Grid.Column="2"
                         Content="Mégse"
-                        Style="{StaticResource ButtonStyle}"
+                        Style="{StaticResource EditorButtonStyle}"
                         Command="{Binding CancelCommand}"
                         CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}">
                     <Button.Resources>

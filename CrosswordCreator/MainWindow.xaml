@@ -13,6 +13,7 @@
         Background="Transparent"
         AllowsTransparency="True"
         WindowStartupLocation="CenterScreen"
+        Drop="Window_Drop" AllowDrop="True"
         Height="600" Width="1150">
     <Window.Resources>
         <ResourceDictionary>
@@ -20,6 +21,8 @@
                 <ResourceDictionary Source="Styles/Styles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <utils:BindingProxy x:Key="BindingProxy" Data="{Binding }"/>
+            <utils:StatusEnumToDescriptionConverter x:Key="StatusEnumToDescriptionConverter" />
+            <utils:StatusEnumToIconConverter x:Key="StatusEnumToIconConverter" />
         </ResourceDictionary>
     </Window.Resources>
 
@@ -95,7 +98,7 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <Button Grid.Column="0" Content="Új"
                         Width="70"
@@ -133,7 +136,7 @@
                     <Button Style="{StaticResource NewCrosswordButtonStyle}"
                             BorderThickness="0 1 0 1"
                             Command="{Binding StartNewCrosswordCommand}">
-                        <Image Source="Images/green_tick.png" Height="25" />
+                        <Image Source="Images/green_tick.png" Height="25"/>
                     </Button>
                     <Button Style="{StaticResource NewCrosswordButtonStyle}"
                             BorderThickness="0 1 1 1"
@@ -144,11 +147,25 @@
                             </Style>
                         </Button.Resources>
 
-                        <Image Source="Images/red_x.png" Height="25" />
+                        <Image Source="Images/red_x.png" Height="25"/>
                     </Button>
                 </StackPanel>
 
+                <Button Grid.Column="3" Content="Megnyitás"
+                        Width="Auto"
+                        Style="{StaticResource FadingButtonStyle}"
+                        Command="{Binding OpenCrosswordCommmand}"/>
             </Grid>
+
+            <StackPanel Grid.Row="2" Grid.Column="1"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right">
+                <Image Source="{Binding StatusEnum, Converter={StaticResource StatusEnumToIconConverter}}"
+                       Height="20"/>
+                <Label Content="{Binding StatusEnum, Converter={StaticResource StatusEnumToDescriptionConverter}}"
+                       Height="35"
+                       FontSize="20"/>
+            </StackPanel>
         </Grid>
     </Border>
 </Window>

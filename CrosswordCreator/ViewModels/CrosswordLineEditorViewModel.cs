@@ -43,7 +43,6 @@ namespace CrosswordCreator.ViewModels
 
       ResetCommand = new RelayCommand(_ =>
       {
-        _changed = false;
         _characterPlaceInWord = _startingCharacterPosition;
         LineWord = _startingWord;
         Clue = _startingClue;
@@ -190,7 +189,7 @@ namespace CrosswordCreator.ViewModels
       set
       {
         _clue = value;
-        _changed = true;
+        _changed = !_clue.Equals(_startingClue);
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Clue)));
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsChanged)));
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SaveButtonTooltip)));
@@ -217,8 +216,8 @@ namespace CrosswordCreator.ViewModels
     }
 
     public bool ShouldUpateMainWindow => _wasSaved;
+    public bool IsChanged => !_startingWord.Equals(_lineWord) || _changed;
 
-    private bool IsChanged => !_startingWord.Equals(_lineWord) || _changed;
     private bool IsValid => _lineWord.Contains(Character);
   }
 }
