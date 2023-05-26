@@ -21,8 +21,6 @@ namespace CrosswordCreator
       _viewModel = DataContext as MainViewModel;
     }
 
-    // TODO: editor window hovers 
-
     private void Button_Click(object sender, RoutedEventArgs e)
     {
       var promptResult = _viewModel.PromptUserForSave();
