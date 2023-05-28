@@ -184,9 +184,7 @@
                             Style="{StaticResource FadingButtonStyle}"
                             Click="CopyScreenshotButtonClicked"/>
                 </StackPanel>
-
             </Grid>
-
         </Grid>
     </Border>
 </Window>
