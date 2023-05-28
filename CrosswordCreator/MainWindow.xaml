@@ -50,16 +50,23 @@
             <StackPanel Grid.Row="0" Grid.Column="1"
                         Orientation="Horizontal"
                         HorizontalAlignment="Right">
+                <Image Source="{Binding StatusEnum, Converter={StaticResource StatusEnumToIconConverter}}"
+                       Height="20"/>
+                <Label Content="{Binding StatusEnum, Converter={StaticResource StatusEnumToDescriptionConverter}}"
+                       Height="35"
+                       FontSize="18"
+                       Margin="0 0 5 0"/>
                 <Button Style="{StaticResource CloseButton}"
-                        Click="Button_Click"/>
+                        Click="CloseButtonClicked"/>
             </StackPanel>
 
             <ListView Grid.Row="1" Grid.ColumnSpan="2"
+                      x:Name="ItemList"
                       ItemsSource="{Binding Rows}"
                       ItemContainerStyle="{StaticResource ListBoxItemStyle}"
                       BorderThickness="0"
                       Margin="5" Padding="0 5 0 0"
-                      Background="Transparent">
+                      Background="White">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <Grid Background="Transparent">
@@ -71,6 +78,7 @@
                             <views:CrosswordLineView Grid.Column="0" 
                                                      CellsLeftFromMiddle="{Binding Data.ControlWidthLeft, Source={StaticResource BindingProxy}}"
                                                      CellsRightFromMiddle="{Binding Data.ControlWidthRight, Source={StaticResource BindingProxy}}"
+                                                     Foreground="{Binding Data.ShowSolutions, Source={StaticResource BindingProxy}, Converter={StaticResource BooleanToForegroundConverter}}"
                                                      Word="{Binding Word}"
                                                      SolutionCharacterNumber="{Binding SolutionCharacterNumber}"/>
                             <StackPanel Grid.Column="1" Orientation="Horizontal">
@@ -93,12 +101,13 @@
                 </ListView.ItemTemplate>
             </ListView>
 
-            <Grid Grid.Row="2">
+            <Grid Grid.Row="2" Grid.ColumnSpan="2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <Button Grid.Column="0" Content="Új"
                         Width="70"
@@ -122,7 +131,7 @@
                             Margin="5">
                     <TextBox x:Name="NewCrosswordTextBox" Text="{Binding NewCrosswordText, UpdateSourceTrigger=PropertyChanged}"
                              Style="{StaticResource InputTextBoxStyle}" 
-                             Width="315" Height="40"
+                             Width="450" Height="40"
                              FontWeight="Bold">
                         <TextBox.Resources>
                             <Style TargetType="{x:Type Border}">
@@ -151,21 +160,33 @@
                     </Button>
                 </StackPanel>
 
-                <Button Grid.Column="3" Content="Megnyitás"
+                <Button Grid.Column="3"
+                        Content="Megnyitás"
                         Width="Auto"
                         Style="{StaticResource FadingButtonStyle}"
                         Command="{Binding OpenCrosswordCommmand}"/>
+
+                <StackPanel Grid.Column="4"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        Margin="0 0 5 0">
+                    <CheckBox Grid.Column="4"
+                              Content="Megoldások megjelenítése"
+                              IsChecked="{Binding ShowSolutions}"
+                              Style="{StaticResource FadingCheckBoxStyle}">
+                        <CheckBox.LayoutTransform>
+                            <ScaleTransform ScaleX="2" ScaleY="2"/>
+                        </CheckBox.LayoutTransform>
+                    </CheckBox>
+
+                    <Button Grid.Column="5"
+                            Content="Másolás"
+                            Style="{StaticResource FadingButtonStyle}"
+                            Click="CopyScreenshotButtonClicked"/>
+                </StackPanel>
+
             </Grid>
 
-            <StackPanel Grid.Row="2" Grid.Column="1"
-                        Orientation="Horizontal"
-                        HorizontalAlignment="Right">
-                <Image Source="{Binding StatusEnum, Converter={StaticResource StatusEnumToIconConverter}}"
-                       Height="20"/>
-                <Label Content="{Binding StatusEnum, Converter={StaticResource StatusEnumToDescriptionConverter}}"
-                       Height="35"
-                       FontSize="20"/>
-            </StackPanel>
         </Grid>
     </Border>
 </Window>

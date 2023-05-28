@@ -30,5 +30,13 @@ namespace CrosswordCreator.Models.Enums
     [Description("Betöltés...")]
     [Icon("Images/hourglass.png")]
     Loading,
+
+    [Description("Másolás sikeres")]
+    [Icon("Images/green_tick.png")]
+    CopySuccessful,
+
+    [Description("Másolás sikertelen")]
+    [Icon("Images/red_x.png")]
+    CopyFailed
   }
 }

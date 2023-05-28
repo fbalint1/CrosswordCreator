@@ -5,6 +5,7 @@
     <utilities:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
     <utilities:BooleanToHeightConverter x:Key="BooleanToHeightConverter"/>
     <utilities:BackgroundConverter x:Key="BackgroundConverter"/>
+    <utilities:BooleanToForegroundConverter x:Key="BooleanToForegroundConverter"/>
 
     <Style x:Key="ButtonStyle" TargetType="{x:Type Button}">
         <Setter Property="Height" Value="40"/>
@@ -37,6 +38,33 @@
     </Style>
 
     <Style x:Key="FadingButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource ButtonStyle}">
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding ShowNewCrosswordInput}" Value="True">
+                <DataTrigger.EnterActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.2"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </DataTrigger.EnterActions>
+                <DataTrigger.ExitActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.3"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </DataTrigger.ExitActions>
+            </DataTrigger>
+            <Trigger Property="Opacity" Value="0">
+                <Setter Property="Visibility" Value="Collapsed"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="FadingCheckBoxStyle" TargetType="{x:Type CheckBox}">
+        <Setter Property="FontSize" Value="12.5"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="Margin" Value="10 0 0 0"/>
         <Style.Triggers>
             <DataTrigger Binding="{Binding ShowNewCrosswordInput}" Value="True">
                 <DataTrigger.EnterActions>
@@ -148,7 +176,7 @@
                 <DataTrigger.EnterActions>
                     <BeginStoryboard>
                         <Storyboard>
-                            <DoubleAnimation Storyboard.TargetProperty="Width" To="395" Duration="0:0:0.3"/>
+                            <DoubleAnimation Storyboard.TargetProperty="Width" To="600" Duration="0:0:0.3"/>
                         </Storyboard>
                     </BeginStoryboard>
                 </DataTrigger.EnterActions>

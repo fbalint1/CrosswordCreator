@@ -1,6 +1,7 @@
 ﻿using CrosswordCreator.ViewModels;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 
 namespace CrosswordCreator.Views
 {
@@ -109,6 +110,12 @@ namespace CrosswordCreator.Views
 
         _container.Children.Clear();
 
+        var foregroundBind = new Binding("Foreground")
+        {
+          Source = this,
+          Mode = BindingMode.OneWay,
+        };
+
         for (int i = 0; i < chars.Length; i++)
         {
           var labelToAdd = new Label()
@@ -116,6 +123,8 @@ namespace CrosswordCreator.Views
             Content = chars[i],
             Visibility = chars[i] != 0 ? Visibility.Visible : Visibility.Hidden,
           };
+          labelToAdd.SetBinding(ForegroundProperty, foregroundBind);
+
 
           if (i == positionToMark)
           {

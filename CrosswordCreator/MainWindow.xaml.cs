@@ -4,6 +4,12 @@ using CrosswordCreator.ViewModels;
 using System;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
+using System.Windows.Media;
+using CrosswordCreator.Utilities;
+using System.Drawing;
+using System.IO;
+using Point = System.Windows.Point;
 
 namespace CrosswordCreator
 {
@@ -21,7 +27,7 @@ namespace CrosswordCreator
       _viewModel = DataContext as MainViewModel;
     }
 
-    private void Button_Click(object sender, RoutedEventArgs e)
+    private void CloseButtonClicked(object sender, RoutedEventArgs e)
     {
       var promptResult = _viewModel.PromptUserForSave();
 
@@ -64,6 +70,51 @@ namespace CrosswordCreator
             _viewModel.StatusEnum = StatusEnum.LoadFailed;
           }
         }
+      }
+    }
+
+    private void CopyScreenshotButtonClicked(object sender, RoutedEventArgs e)
+    {
+      try
+      {
+        double height, width;
+        int renderHeight, renderWidth;
+
+        height = ItemList.RenderSize.Height;
+        renderHeight = (int)height;
+        width = ItemList.RenderSize.Width;
+        // Subtract 40 from the width to cut down the edit row button from the right 
+        renderWidth = (int)width - 40;
+
+        var renderTarget = new RenderTargetBitmap(renderWidth, renderHeight, 96, 96, PixelFormats.Pbgra32);
+
+        var visualBrush = new VisualBrush(ItemList);
+
+        var drawingVisual = new DrawingVisual();
+        using (DrawingContext drawingContext = drawingVisual.RenderOpen())
+        {
+          // Still render the full distance otherwise the controls visual will be adjusted to fit everything
+          // But this way the buttons end up being rendered out of bounds, and thus disappear
+          drawingContext.DrawRectangle(visualBrush, null, new Rect(new Point(0, 0), new Point(width, height)));
+        }
+
+        renderTarget.Render(drawingVisual);
+
+        var encoder = new PngBitmapEncoder();
+        encoder.Frames.Add(BitmapFrame.Create(renderTarget));
+
+        using (var stream = new MemoryStream())
+        {
+          encoder.Save(stream);
+          var image = Image.FromStream(stream);
+          ClipboardUtil.WriteToClipboard(image);
+        }
+
+        _viewModel.StatusEnum = StatusEnum.CopySuccessful;
+      }
+      catch (Exception)
+      {
+        _viewModel.StatusEnum = StatusEnum.CopyFailed;
       }
     }
   }

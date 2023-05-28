@@ -22,6 +22,8 @@
             <Setter Property="Background" Value="Transparent"/>
         </Style>
     </UserControl.Resources>
-    <StackPanel x:Name="_container" Background="Transparent" Orientation="Horizontal">
+    <StackPanel x:Name="_container" 
+                Orientation="Horizontal"
+                Background="Transparent">
     </StackPanel>
 </UserControl>

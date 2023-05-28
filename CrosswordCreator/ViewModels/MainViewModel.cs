@@ -26,12 +26,12 @@ namespace CrosswordCreator.ViewModels
     private Crossword _currentCrossword;
     private bool _isCurrentCrosswordModified = false;
     private bool _showNewCrosswordInput = false;
+    private bool _showSolutions = true;
     private string _newCrosswordText = string.Empty;
     private string _selectedPath;
     private volatile bool _isSaving = false;
     private volatile bool _isLoading = false;
     private volatile StatusEnum _statusEnum = StatusEnum.None;
-
 
     public MainViewModel()
     {
@@ -93,7 +93,7 @@ namespace CrosswordCreator.ViewModels
         dialog.Filter = "CSV files (*.xml)|*.xml";
         if (!string.IsNullOrEmpty(_selectedPath))
         {
-          dialog.InitialDirectory = _selectedPath ;
+          dialog.InitialDirectory = _selectedPath;
         }
         var result = dialog.ShowDialog();
         if (dialog.FileName != null && result == DialogResult.OK)
@@ -194,6 +194,19 @@ namespace CrosswordCreator.ViewModels
     public ICommand EditCommand { get; private set; }
 
     public bool ShowNewCrosswordInput => _showNewCrosswordInput;
+
+    public bool ShowSolutions
+    {
+      get { return _showSolutions; }
+      set
+      {
+        if (_showSolutions != value)
+        {
+          _showSolutions = value;
+          PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ShowSolutions)));
+        }
+      }
+    }
 
     public StatusEnum StatusEnum
     {
