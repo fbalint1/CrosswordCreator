@@ -56,7 +56,12 @@
                        Height="35"
                        FontSize="18"
                        Margin="0 0 5 0"/>
-                <Button Style="{StaticResource CloseButton}"
+
+                <Button Style="{StaticResource MinimizeButtonstyle}"
+                        Click="MinimizeButtonClicked"/>
+                <Button Style="{StaticResource MaximizeButtonstyle}"
+                        Click="MaximizeButtonClicked"/>
+                <Button Style="{StaticResource CloseButtonStyle}"
                         Click="CloseButtonClicked"/>
             </StackPanel>
 

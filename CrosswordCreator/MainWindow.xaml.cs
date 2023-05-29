@@ -27,6 +27,18 @@ namespace CrosswordCreator
       _viewModel = DataContext as MainViewModel;
     }
 
+    private void MinimizeButtonClicked(object sender, RoutedEventArgs e)
+    {
+      WindowState = WindowState.Minimized;
+    }
+
+    private void MaximizeButtonClicked(object sender, RoutedEventArgs e)
+    {
+      WindowState = WindowState == WindowState.Maximized 
+        ? WindowState.Normal 
+        : WindowState.Maximized;
+    }
+
     private void CloseButtonClicked(object sender, RoutedEventArgs e)
     {
       var promptResult = _viewModel.PromptUserForSave();

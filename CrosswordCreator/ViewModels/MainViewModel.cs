@@ -47,18 +47,18 @@ namespace CrosswordCreator.ViewModels
       LoadPreviousWorkingDirectory();
 
 #if DEBUG
-      var testCrossword = new Crossword()
-      {
-        Goal = "LEN",
-        Lines = new CrosswordLine[]
-        {
-          new CrosswordLine() { LineWord = "VALAMI", SolutionCharacterNumberInLineWord = 2, Clue = "Ez egy clue", PlaceInCrossword = 1 },
-          new CrosswordLine() { LineWord = "EGYENLŐTLENSÉG", SolutionCharacterNumberInLineWord = 9, Clue = "Ez egy clue", PlaceInCrossword = 2 },
-          new CrosswordLine() { LineWord = "KANÁL", SolutionCharacterNumberInLineWord = 2, Clue = "Ez egy clue", PlaceInCrossword = 3, IsLastInCrossword = true }
-        }
-      };
+      //var testCrossword = new Crossword()
+      //{
+      //  Goal = "LEN",
+      //  Lines = new CrosswordLine[]
+      //  {
+      //    new CrosswordLine() { LineWord = "VALAMI", SolutionCharacterNumberInLineWord = 2, Clue = "Ez egy clue", PlaceInCrossword = 1 },
+      //    new CrosswordLine() { LineWord = "EGYENLŐTLENSÉG", SolutionCharacterNumberInLineWord = 9, Clue = "Ez egy clue", PlaceInCrossword = 2 },
+      //    new CrosswordLine() { LineWord = "KANÁL", SolutionCharacterNumberInLineWord = 2, Clue = "Ez egy clue", PlaceInCrossword = 3, IsLastInCrossword = true }
+      //  }
+      //};
 
-      PopulateDataFromCrossword(testCrossword);
+      //PopulateDataFromCrossword(testCrossword);
 #endif
 
       NewCrosswordCommand = new RelayCommand(_ =>
@@ -129,10 +129,7 @@ namespace CrosswordCreator.ViewModels
                   {
                     PopulateDataFromCrossword(new Crossword(_newCrosswordText));
 
-                    _showNewCrosswordInput = false;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ShowNewCrosswordInput)));
-
-                    NewCrosswordText = string.Empty;
+                    ResetNewCrosswordMetrics();
                   });
                 });
               break;
@@ -141,14 +138,17 @@ namespace CrosswordCreator.ViewModels
 
               PopulateDataFromCrossword(new Crossword(_newCrosswordText));
 
-              _showNewCrosswordInput = false;
-              PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ShowNewCrosswordInput)));
-
-              NewCrosswordText = string.Empty;
+              ResetNewCrosswordMetrics();
               break;
             default:
               throw new InvalidOperationException("Unmapped enum state");
           }
+        }
+        else
+        {
+          PopulateDataFromCrossword(new Crossword(_newCrosswordText));
+
+          ResetNewCrosswordMetrics();
         }
       });
 
@@ -293,6 +293,14 @@ namespace CrosswordCreator.ViewModels
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ControlWidthRight)));
     }
 
+    private void ResetNewCrosswordMetrics()
+    {
+      _showNewCrosswordInput = false;
+      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ShowNewCrosswordInput)));
+
+      NewCrosswordText = string.Empty;
+    }
+
     private void ShowDirectorySelection()
     {
       var dialog = new FolderBrowserDialog();
@@ -312,7 +320,7 @@ namespace CrosswordCreator.ViewModels
         Directory.CreateDirectory(appDataFolder);
       }
 
-      File.WriteAllLines($"{Path.Combine(appDataFolder, PREF_FILE_NAME)}", new[] { _selectedPath, _currentCrossword.Goal });
+      File.WriteAllLines($"{Path.Combine(appDataFolder, PREF_FILE_NAME)}", new[] { _selectedPath, _currentCrossword?.Goal ?? string.Empty });
     }
 
     private void LoadPreviousWorkingDirectory()
@@ -334,7 +342,7 @@ namespace CrosswordCreator.ViewModels
 
       if (preferencesLines.Length > 1 && preferencesLines[1] != string.Empty)
       {
-        var fileName = Path.Combine(_selectedPath, preferencesFile[1] + ".xml");
+        var fileName = Path.Combine(_selectedPath, preferencesLines[1] + ".xml");
 
         if (File.Exists(fileName))
         {
