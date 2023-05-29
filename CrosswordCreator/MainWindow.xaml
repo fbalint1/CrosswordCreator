@@ -30,7 +30,9 @@
         <vms:MainViewModel />
     </Window.DataContext>
 
-    <Border Background="White" CornerRadius="10">
+    <Border Background="White"
+            CornerRadius="10"
+            Margin="5">
         <Grid Background="Transparent" MouseLeftButtonDown="Grid_MouseLeftButtonDown">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="4*"/>
