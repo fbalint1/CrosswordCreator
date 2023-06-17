@@ -17,6 +17,7 @@ namespace CrosswordCreator.ViewModels
   {
     private const string TEMP_FOLDER = "CrosswordCreator";
     private const string PREF_FILE_NAME = "preferences.xml";
+    private const string LOG_FILE_NAME = "log.txt";
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -160,22 +161,32 @@ namespace CrosswordCreator.ViewModels
 
       EditCommand = new RelayCommand(row =>
       {
-        if (row is CrosswordLineViewModel crosswordLineViewModel)
+        try
         {
-          var editorViewModel = new CrosswordLineEditorViewModel(crosswordLineViewModel.Word, crosswordLineViewModel.Clue, crosswordLineViewModel.SolutionCharacterNumber);
-          var editorView = new CrosswordLineEditorView(editorViewModel);
-          editorView.ShowDialog();
-
-          if (editorViewModel.ShouldUpateMainWindow)
+          if (row is CrosswordLineViewModel crosswordLineViewModel)
           {
-            _isCurrentCrosswordModified = true;
+            var editorViewModel = new CrosswordLineEditorViewModel(crosswordLineViewModel.Word, crosswordLineViewModel.Clue, crosswordLineViewModel.SolutionCharacterNumber);
+            var editorView = new CrosswordLineEditorView(editorViewModel);
+            editorView.ShowDialog();
 
-            crosswordLineViewModel.Word = editorViewModel.LineWord;
-            crosswordLineViewModel.Clue = editorViewModel.Clue;
-            crosswordLineViewModel.SolutionCharacterNumber = editorViewModel.CharacterPlaceInWord;
+            if (editorViewModel.ShouldUpateMainWindow)
+            {
+              _isCurrentCrosswordModified = true;
 
-            RecalculateGridMetrics();
+              crosswordLineViewModel.Word = editorViewModel.LineWord;
+              crosswordLineViewModel.Clue = editorViewModel.Clue;
+              crosswordLineViewModel.SolutionCharacterNumber = editorViewModel.CharacterPlaceInWord;
+
+              RecalculateGridMetrics();
+            }
           }
+        }
+        catch (Exception ex)
+        {
+          var logFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), TEMP_FOLDER, LOG_FILE_NAME);
+
+          File.WriteAllLines(logFile, new[] { ex.Message, ex.StackTrace });
+          throw;
         }
       });
     }
