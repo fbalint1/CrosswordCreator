@@ -17,7 +17,6 @@ namespace CrosswordCreator.ViewModels
   {
     private const string TEMP_FOLDER = "CrosswordCreator";
     private const string PREF_FILE_NAME = "preferences.xml";
-    private const string LOG_FILE_NAME = "log.txt";
 
     public event PropertyChangedEventHandler? PropertyChanged;
 

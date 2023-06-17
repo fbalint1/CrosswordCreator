@@ -189,7 +189,14 @@
                     <Button Grid.Column="5"
                             Content="Másolás"
                             Style="{StaticResource FadingButtonStyle}"
-                            Click="CopyScreenshotButtonClicked"/>
+                            Click="CopyScreenshotButtonClicked"
+                            ToolTip="A keresztrejtvény képének vágólapra helyezése">
+                        <Button.Resources>
+                            <Style TargetType="{x:Type ToolTip}">
+                                <Setter Property="FontSize" Value="20"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
                 </StackPanel>
             </Grid>
         </Grid>

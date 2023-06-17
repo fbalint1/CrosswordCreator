@@ -4,13 +4,15 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CrosswordCreator.Views"
+        xmlns:vms="clr-namespace:CrosswordCreator.ViewModels"
         mc:Ignorable="d"
         Title="CrosswordLineEditorView"
         WindowStyle="None"
         Background="Transparent"
         AllowsTransparency="True"
         WindowStartupLocation="CenterScreen"
-        SizeToContent="WidthAndHeight">
+        SizeToContent="WidthAndHeight"
+        d:DataContext="{d:DesignInstance vms:CrosswordLineEditorViewModel}">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -31,9 +33,9 @@
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type TextBoxBase}">
                             <Border BorderBrush="Black" 
-                            Background="LightGray"
-                            BorderThickness="1"
-                            CornerRadius="10">
+                                    Background="LightGray"
+                                    BorderThickness="1"
+                                    CornerRadius="10">
                                 <ScrollViewer x:Name="PART_ContentHost" 
                                       HorizontalScrollBarVisibility="Hidden"
                                       VerticalScrollBarVisibility="Hidden"/>
@@ -42,7 +44,7 @@
                     </Setter.Value>
                 </Setter>
             </Style>
-            
+
             <Style x:Key="RichTextBoxStyle" TargetType="{x:Type RichTextBox}">
                 <Setter Property="FontWeight" Value="Bold"/>
                 <Setter Property="Background" Value="LightGray"/>
@@ -86,33 +88,33 @@
                     <Setter.Value>
                         <ControlTemplate TargetType="Button">
                             <Border CornerRadius="7 0 0 7"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}"
-                            Background="{TemplateBinding Background}">
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    Background="{TemplateBinding Background}">
                                 <ContentPresenter Margin="{TemplateBinding Padding}"
-                                          HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                  HorizontalAlignment="Center" VerticalAlignment="Center" />
                             </Border>
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
             </Style>
-            
+
             <Style x:Key="RightArrowButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource ArrowButtonStyle}">
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="Button">
                             <Border CornerRadius="0 7 7 0"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}"
-                            Background="{TemplateBinding Background}">
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    Background="{TemplateBinding Background}">
                                 <ContentPresenter Margin="{TemplateBinding Padding}"
-                                          HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                  HorizontalAlignment="Center" VerticalAlignment="Center" />
                             </Border>
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
             </Style>
-            
+
             <Style x:Key="EditorButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource ButtonStyle}">
                 <Setter Property="Margin" Value="4"/>
                 <Setter Property="BorderBrush" Value="Black"/>
@@ -139,7 +141,7 @@
                     </Trigger>
                 </Style.Triggers>
             </Style>
-            
+
             <Storyboard x:Key="ShrinkSize">
                 <DoubleAnimation Storyboard.TargetProperty="Height" From="50" To="0" Duration="0:0:0:0.3"/>
             </Storyboard>
@@ -271,7 +273,7 @@
                         <Image Source="../Images/RightArrow.png" Margin="0 1.5 0 0"/>
                     </Button>
                 </Grid>
-                
+
             </Grid>
 
 
