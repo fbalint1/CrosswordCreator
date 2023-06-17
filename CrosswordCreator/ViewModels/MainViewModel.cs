@@ -161,32 +161,22 @@ namespace CrosswordCreator.ViewModels
 
       EditCommand = new RelayCommand(row =>
       {
-        try
+        if (row is CrosswordLineViewModel crosswordLineViewModel)
         {
-          if (row is CrosswordLineViewModel crosswordLineViewModel)
+          var editorViewModel = new CrosswordLineEditorViewModel(crosswordLineViewModel.Word, crosswordLineViewModel.Clue, crosswordLineViewModel.SolutionCharacterNumber);
+          var editorView = new CrosswordLineEditorView(editorViewModel);
+          editorView.ShowDialog();
+
+          if (editorViewModel.ShouldUpateMainWindow)
           {
-            var editorViewModel = new CrosswordLineEditorViewModel(crosswordLineViewModel.Word, crosswordLineViewModel.Clue, crosswordLineViewModel.SolutionCharacterNumber);
-            var editorView = new CrosswordLineEditorView(editorViewModel);
-            editorView.ShowDialog();
+            _isCurrentCrosswordModified = true;
 
-            if (editorViewModel.ShouldUpateMainWindow)
-            {
-              _isCurrentCrosswordModified = true;
+            crosswordLineViewModel.Word = editorViewModel.LineWord;
+            crosswordLineViewModel.Clue = editorViewModel.Clue;
+            crosswordLineViewModel.SolutionCharacterNumber = editorViewModel.CharacterPlaceInWord;
 
-              crosswordLineViewModel.Word = editorViewModel.LineWord;
-              crosswordLineViewModel.Clue = editorViewModel.Clue;
-              crosswordLineViewModel.SolutionCharacterNumber = editorViewModel.CharacterPlaceInWord;
-
-              RecalculateGridMetrics();
-            }
+            RecalculateGridMetrics();
           }
-        }
-        catch (Exception ex)
-        {
-          var logFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), TEMP_FOLDER, LOG_FILE_NAME);
-
-          File.WriteAllLines(logFile, new[] { ex.Message, ex.StackTrace });
-          throw;
         }
       });
     }

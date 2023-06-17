@@ -22,24 +22,24 @@
     <Content Include="CrosswordCreator.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Images\EditButton.png">
+    <Resource Include="Images\EditButton.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\green_tick.png">
+    </Resource>
+    <Resource Include="Images\green_tick.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\hourglass.png">
+    </Resource>
+    <Resource Include="Images\hourglass.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\LeftArrow.png">
+    </Resource>
+    <Resource Include="Images\LeftArrow.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\red_x.png">
+    </Resource>
+    <Resource Include="Images\red_x.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\RightArrow.png">
+    </Resource>
+    <Resource Include="Images\RightArrow.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    </Resource>
   </ItemGroup>
 
 </Project>
