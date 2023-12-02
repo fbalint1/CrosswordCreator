@@ -129,6 +129,8 @@ namespace CrosswordCreator.ViewModels
                   {
                     PopulateDataFromCrossword(new Crossword(_newCrosswordText));
 
+                    _isCurrentCrosswordModified = true;
+
                     ResetNewCrosswordMetrics();
                   });
                 });
@@ -137,6 +139,8 @@ namespace CrosswordCreator.ViewModels
               StatusEnum = StatusEnum.Loading;
 
               PopulateDataFromCrossword(new Crossword(_newCrosswordText));
+
+              _isCurrentCrosswordModified = true;
 
               ResetNewCrosswordMetrics();
               break;
@@ -248,16 +252,20 @@ namespace CrosswordCreator.ViewModels
 
       if (crossword_.Lines.Length == 0)
       {
+        _currentCrossword.Lines = new CrosswordLine[crossword_.Goal.Length];
         for (int i = 0; i < crossword_.Goal.Length; i++)
         {
-          Rows.Add(new CrosswordLineViewModel(new CrosswordLine()
+          var line = new CrosswordLine()
           {
             LineWord = crossword_.Goal[i].ToString(),
             SolutionCharacterNumberInLineWord = 0,
             Clue = string.Empty,
             PlaceInCrossword = i + 1,
             IsLastInCrossword = i == crossword_.Goal.Length - 1,
-          }));
+          };
+
+          _currentCrossword.Lines[i] = line;
+          Rows.Add(new CrosswordLineViewModel(line));
         }
       }
       else
@@ -360,6 +368,7 @@ namespace CrosswordCreator.ViewModels
       {
         CrosswordSerializer.PersistCrossword(_currentCrossword, _selectedPath);
         StatusEnum = StatusEnum.SaveComplete;
+        _isCurrentCrosswordModified = false;
       }
       catch (Exception)
       {
